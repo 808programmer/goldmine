@@ -1,0 +1,149 @@
+/* Support Chat Styles */
+.chat-message {
+    margin-bottom: 1rem;
+}
+
+.chat-message.user .flex {
+    flex-direction: row-reverse;
+}
+
+.chat-message.user .ml-2 {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+.chat-message.user .rounded-tl-none {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0;
+}
+
+.chat-message.user .bg-blue-100 {
+    background-color: #dbeafe;
+}
+
+.chat-message.user .dark\:bg-blue-600 {
+    background-color: #2563eb;
+}
+
+.chat-message .typing-indicator {
+    display: inline-flex;
+    align-items: center;
+}
+
+.chat-message .typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: #60a5fa;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 1px;
+    animation: typing 1.4s infinite both;
+}
+
+.chat-message .typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.chat-message .typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0% {
+        transform: translateY(0px);
+    }
+    28% {
+        transform: translateY(-5px);
+    }
+    44% {
+        transform: translateY(0px);
+    }
+}
+
+/* Support button pulse animation */
+@keyframes support-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.support-pulse {
+    animation: support-pulse 2s infinite;
+}
+
+/* Smooth transitions for the chat modal */
+#footer-modal {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transform-origin: bottom right;
+    max-width: 420px;
+    width: 100%;
+    margin: 0; /* Reset any margin */
+}
+
+#footer-modal.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+#footer-modal .relative {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: bottom right;
+    width: 100%; /* Ensure full width */
+}
+
+#footer-modal.show .relative {
+    transform: translateY(0);
+}
+
+/* Add shadow animation */
+#footer-modal .bg-white {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    transition: box-shadow 0.4s ease-in-out;
+    max-height: 80vh; /* Prevent modal from being too tall */
+    overflow: hidden;
+}
+
+#footer-modal.show .bg-white {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Add a nice scroll design to the chat window */
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.dark #chat-messages::-webkit-scrollbar-track {
+    background: #2d3748;
+}
+
+.dark #chat-messages::-webkit-scrollbar-thumb {
+    background: #4a5568;
+}
+
+.dark #chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+} 

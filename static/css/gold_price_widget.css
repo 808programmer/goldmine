@@ -1,0 +1,113 @@
+/* Gold Price Widget Styles */
+
+.gold-price-widget {
+    /* background-color: rgba(255, 255, 255, 0.9); */
+    background-color: #f0f0f0;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+}
+
+.dark .gold-price-widget {
+    background-color: rgba(58, 61, 68, 0.9);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+.gold-price-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.gold-icon {
+    color: #FFD700;
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+}
+
+.dark .gold-icon {
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.7));
+}
+
+.gold-price-value {
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.gold-price-change {
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.gold-price-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .gold-price-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gold-price-refresh {
+    transition: all 0.2s ease;
+}
+
+.gold-price-refresh:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .gold-price-refresh:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.gold-price-last-updated {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.dark .gold-price-last-updated {
+    color: #A0AEC0;
+}
+
+/* Animation for price changes */
+@keyframes price-pulse-up {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(72, 187, 120, 0.2); }
+    100% { background-color: transparent; }
+}
+
+@keyframes price-pulse-down {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(245, 101, 101, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.price-up {
+    animation: price-pulse-up 1s ease-in-out;
+}
+
+.price-down {
+    animation: price-pulse-down 1s ease-in-out;
+}
+
+/* Animation for the gold icon */
+@keyframes pulse-slow {
+    0% { filter: drop-shadow(0 0 1px rgba(255, 215, 0, 0.5)); }
+    50% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); }
+    100% { filter: drop-shadow(0 0 1px rgba(255, 215, 0, 0.5)); }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s infinite ease-in-out;
+}
+
+.dark .animate-pulse-slow {
+    animation: pulse-slow 3s infinite ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .gold-price-widget {
+        width: 100%;
+        max-width: 100%;
+    }
+} 

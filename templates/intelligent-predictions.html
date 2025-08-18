@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+
+{% block title %}Intelligent Predictions - GoldMine AI{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">🧠 Intelligent Predictions</h1>
+        <p class="text-xl text-gray-600">Advanced AI-powered coordinate and trend generation for gold exploration</p>
+    </div>
+
+    <!-- Status Dashboard -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">📊 System Status</h2>
+        <div id="status-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <div class="text-2xl font-bold text-blue-600" id="total-features">-</div>
+                <div class="text-sm text-gray-600">Total Features</div>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+                <div class="text-2xl font-bold text-green-600" id="intelligent-features">-</div>
+                <div class="text-sm text-gray-600">Intelligent Features</div>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <div class="text-2xl font-bold text-purple-600" id="exploration-areas">-</div>
+                <div class="text-sm text-gray-600">Exploration Areas</div>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <div class="text-2xl font-bold text-orange-600" id="patterns-learned">-</div>
+                <div class="text-sm text-gray-600">Patterns Learned</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligent Coordinate Generation -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">📍 Generate Intelligent Coordinates</h2>
+        <p class="text-gray-600 mb-6">Generate new coordinates in unexplored areas using advanced ML patterns</p>
+        
+        <form id="coordinate-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="num-predictions" class="block text-sm font-medium text-gray-700 mb-2">Number of Predictions</label>
+                    <input type="number" id="num-predictions" name="num_predictions" value="50" min="10" max="200" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="confidence-threshold" class="block text-sm font-medium text-gray-700 mb-2">Confidence Threshold</label>
+                    <input type="number" id="confidence-threshold" name="confidence_threshold" value="0.6" min="0.1" max="1.0" step="0.1"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="exploration-radius" class="block text-sm font-medium text-gray-700 mb-2">Exploration Radius (degrees)</label>
+                    <input type="number" id="exploration-radius" name="exploration_radius" value="0.5" min="0.1" max="2.0" step="0.1"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            
+            <button type="submit" id="generate-coordinates-btn" 
+                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                🚀 Generate Intelligent Coordinates
+            </button>
+        </form>
+        
+        <div id="coordinate-results" class="mt-6 hidden">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Results</h3>
+                <div id="coordinate-results-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligent Trend Generation -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">📈 Generate Intelligent Trends</h2>
+        <p class="text-gray-600 mb-6">Generate geological trends based on learned patterns and formations</p>
+        
+        <form id="trend-form" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="max-trends" class="block text-sm font-medium text-gray-700 mb-2">Maximum Trends</label>
+                    <input type="number" id="max-trends" name="max_trends" value="20" min="5" max="50" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="min-trend-length" class="block text-sm font-medium text-gray-700 mb-2">Minimum Trend Length (degrees)</label>
+                    <input type="number" id="min-trend-length" name="min_trend_length" value="0.1" min="0.05" max="1.0" step="0.05"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="trend-confidence" class="block text-sm font-medium text-gray-700 mb-2">Confidence Threshold</label>
+                    <input type="number" id="trend-confidence" name="confidence_threshold" value="0.5" min="0.1" max="1.0" step="0.1"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            
+            <button type="submit" id="generate-trends-btn" 
+                    class="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                📊 Generate Intelligent Trends
+            </button>
+        </form>
+        
+        <div id="trend-results" class="mt-6 hidden">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Results</h3>
+                <div id="trend-results-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exploration Areas -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🗺️ Exploration Areas</h2>
+        <p class="text-gray-600 mb-6">High-priority areas identified for gold exploration</p>
+        
+        <div id="exploration-areas-list" class="space-y-4">
+            <!-- Exploration areas will be populated here -->
+        </div>
+    </div>
+
+    <!-- Pattern Analysis -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🧠 Learned Patterns</h2>
+        <p class="text-gray-600 mb-6">Geological patterns discovered by the AI system</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-blue-800 mb-2">Coordinate Clusters</h3>
+                <div id="coordinate-clusters-info" class="text-sm text-blue-700">
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-green-800 mb-2">Formation Patterns</h3>
+                <div id="formation-patterns-info" class="text-sm text-green-700">
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="bg-purple-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-purple-800 mb-2">Mineral Associations</h3>
+                <div id="mineral-associations-info" class="text-sm text-purple-700">
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="bg-orange-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-orange-800 mb-2">Spatial Distribution</h3>
+                <div id="spatial-distribution-info" class="text-sm text-orange-700">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load initial status
+    loadStatus();
+    
+    // Coordinate generation form
+    document.getElementById('coordinate-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        generateIntelligentCoordinates();
+    });
+    
+    // Trend generation form
+    document.getElementById('trend-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        generateIntelligentTrends();
+    });
+});
+
+function loadStatus() {
+    fetch('/api/intelligent-predictions-status/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatusDashboard(data.status);
+                updateExplorationAreas(data.status.exploration_areas);
+                updatePatternInfo(data.status.patterns_learned);
+            } else {
+                console.error('Failed to load status:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading status:', error);
+        });
+}
+
+function updateStatusDashboard(status) {
+    document.getElementById('total-features').textContent = status.total_features_count;
+    document.getElementById('intelligent-features').textContent = status.intelligent_features_count;
+    document.getElementById('exploration-areas').textContent = status.exploration_areas_count;
+    document.getElementById('patterns-learned').textContent = 
+        status.patterns_learned.coordinate_clusters + status.patterns_learned.formation_patterns + status.patterns_learned.mineral_associations;
+}
+
+function updateExplorationAreas(areas) {
+    const container = document.getElementById('exploration-areas-list');
+    container.innerHTML = '';
+    
+    if (areas.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">No exploration areas identified yet. Generate intelligent coordinates to discover areas.</p>';
+        return;
+    }
+    
+    areas.forEach((area, index) => {
+        const areaElement = document.createElement('div');
+        areaElement.className = 'bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500';
+        areaElement.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-semibold text-gray-800">Exploration Area ${index + 1}</h3>
+                    <p class="text-sm text-gray-600">Location: (${area.center_lat.toFixed(3)}, ${area.center_lon.toFixed(3)})</p>
+                    <p class="text-sm text-gray-600">Radius: ${area.radius}° | Predictions: ${area.prediction_count}</p>
+                    <p class="text-sm text-gray-600">Avg Confidence: ${(area.avg_confidence * 100).toFixed(1)}% | Avg Gold Probability: ${(area.avg_gold_probability * 100).toFixed(1)}%</p>
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                        area.exploration_priority === 'high' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                    }">
+                        ${area.exploration_priority.toUpperCase()} PRIORITY
+                    </span>
+                </div>
+            </div>
+            ${area.recommended_actions ? `
+                <div class="mt-3">
+                    <h4 class="text-sm font-medium text-gray-700 mb-1">Recommended Actions:</h4>
+                    <ul class="text-xs text-gray-600 space-y-1">
+                        ${area.recommended_actions.map(action => `<li>• ${action}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+        `;
+        container.appendChild(areaElement);
+    });
+}
+
+function updatePatternInfo(patterns) {
+    document.getElementById('coordinate-clusters-info').textContent = 
+        `${patterns.coordinate_clusters} clusters identified`;
+    document.getElementById('formation-patterns-info').textContent = 
+        `${patterns.formation_patterns} formation patterns learned`;
+    document.getElementById('mineral-associations-info').textContent = 
+        `${patterns.mineral_associations} mineral associations discovered`;
+    document.getElementById('spatial-distribution-info').textContent = 
+        'Spatial correlation patterns analyzed';
+}
+
+function generateIntelligentCoordinates() {
+    const form = document.getElementById('coordinate-form');
+    const button = document.getElementById('generate-coordinates-btn');
+    const resultsDiv = document.getElementById('coordinate-results');
+    const resultsContent = document.getElementById('coordinate-results-content');
+    
+    // Disable button and show loading
+    button.disabled = true;
+    button.textContent = '🔄 Generating...';
+    resultsDiv.classList.add('hidden');
+    
+    const formData = new FormData(form);
+    const data = {
+        num_predictions: parseInt(formData.get('num_predictions')),
+        confidence_threshold: parseFloat(formData.get('confidence_threshold')),
+        exploration_radius: parseFloat(formData.get('exploration_radius'))
+    };
+    
+    fetch('/api/generate-intelligent-coordinates/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultsContent.innerHTML = `
+                <div class="text-green-600 font-semibold">✅ ${data.message}</div>
+                <div class="mt-2 text-sm text-gray-600">
+                    <p>• Coordinates generated: ${data.coordinates_generated}</p>
+                    <p>• Features created: ${data.features_created}</p>
+                    ${data.exploration_areas ? `<p>• Exploration areas: ${data.exploration_areas.length}</p>` : ''}
+                </div>
+            `;
+        } else {
+            resultsContent.innerHTML = `
+                <div class="text-red-600 font-semibold">❌ ${data.message}</div>
+            `;
+        }
+        resultsDiv.classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultsContent.innerHTML = `
+            <div class="text-red-600 font-semibold">❌ Error generating coordinates</div>
+        `;
+        resultsDiv.classList.remove('hidden');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.textContent = '🚀 Generate Intelligent Coordinates';
+        
+        // Reload status
+        loadStatus();
+    });
+}
+
+function generateIntelligentTrends() {
+    const form = document.getElementById('trend-form');
+    const button = document.getElementById('generate-trends-btn');
+    const resultsDiv = document.getElementById('trend-results');
+    const resultsContent = document.getElementById('trend-results-content');
+    
+    // Disable button and show loading
+    button.disabled = true;
+    button.textContent = '🔄 Generating...';
+    resultsDiv.classList.add('hidden');
+    
+    const formData = new FormData(form);
+    const data = {
+        max_trends: parseInt(formData.get('max_trends')),
+        min_trend_length: parseFloat(formData.get('min_trend_length')),
+        confidence_threshold: parseFloat(formData.get('confidence_threshold'))
+    };
+    
+    fetch('/api/generate-intelligent-trends/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultsContent.innerHTML = `
+                <div class="text-green-600 font-semibold">✅ ${data.message}</div>
+                <div class="mt-2 text-sm text-gray-600">
+                    <p>• Trends generated: ${data.trends_generated}</p>
+                </div>
+                ${data.trends ? `
+                    <div class="mt-3">
+                        <h4 class="font-medium text-gray-700 mb-2">Generated Trends:</h4>
+                        <div class="space-y-2">
+                            ${data.trends.slice(0, 5).map(trend => `
+                                <div class="bg-white p-2 rounded border">
+                                    <div class="font-medium">${trend.name}</div>
+                                    <div class="text-xs text-gray-500">
+                                        Type: ${trend.trend_type} | Confidence: ${(trend.confidence * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        } else {
+            resultsContent.innerHTML = `
+                <div class="text-red-600 font-semibold">❌ ${data.message}</div>
+            `;
+        }
+        resultsDiv.classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultsContent.innerHTML = `
+            <div class="text-red-600 font-semibold">❌ Error generating trends</div>
+        `;
+        resultsDiv.classList.remove('hidden');
+    })
+    .finally(() => {
+        // Re-enable button
+        button.disabled = false;
+        button.textContent = '📊 Generate Intelligent Trends';
+        
+        // Reload status
+        loadStatus();
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

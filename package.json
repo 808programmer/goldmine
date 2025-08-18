@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "alpinejs": "^3.14.9",
+    "cesium": "^1.129.0"
+  }
+}

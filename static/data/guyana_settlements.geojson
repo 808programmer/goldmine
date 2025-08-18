@@ -1,0 +1,125 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mahdia",
+        "type": "town",
+        "population": 4000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.15, 5.26]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kaieteur Falls",
+        "type": "landmark",
+        "population": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.48, 5.17]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Paramakatoi",
+        "type": "village",
+        "population": 1200
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.78, 4.69]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Orinduik",
+        "type": "village",
+        "population": 850
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.77, 4.72]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Monkey Mountain",
+        "type": "village",
+        "population": 700
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.68, 4.51]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tumatumari",
+        "type": "village",
+        "population": 500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.0, 5.3]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kato",
+        "type": "village",
+        "population": 600
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.82, 4.65]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kurukabaru",
+        "type": "village",
+        "population": 900
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.88, 4.96]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kopinang",
+        "type": "village",
+        "population": 750
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.53, 4.88]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Chenapau",
+        "type": "village",
+        "population": 400
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-59.55, 4.98]
+      }
+    }
+  ]
+} 

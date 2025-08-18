@@ -1,0 +1,1478 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload Management - GoldMine AI{% endblock %}
+
+{% block head_extra %}
+<script src="{% static 'js/modules/api.js' %}"></script>
+<script src="{% static 'js/modules/collective_analysis.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .status-processed {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    
+    .dark .status-processed {
+        background-color: #14532d;
+        color: #bbf7d0;
+    }
+    
+    .status-processing {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    
+    .dark .status-processing {
+        background-color: #78350f;
+        color: #fde68a;
+    }
+    
+    .status-pending {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .dark .status-pending {
+        background-color: #1e3a8a;
+        color: #93c5fd;
+    }
+    
+    .status-failed {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .dark .status-failed {
+        background-color: #7f1d1d;
+        color: #fecaca;
+    }
+    
+    .status-unprocessed {
+        background-color: #fed7aa;
+        color: #c2410c;
+    }
+    
+    .dark .status-unprocessed {
+        background-color: #9a3412;
+        color: #fed7aa;
+    }
+    
+    .status-retry_pending {
+        background-color: #e0e7ff;
+        color: #3730a3;
+    }
+    
+    .dark .status-retry_pending {
+        background-color: #312e81;
+        color: #c7d2fe;
+    }
+    
+    /* Cancel button hover effects */
+    .processing-indicator-container {
+        transition: all 0.2s ease-in-out;
+        border-radius: 4px;
+        padding: 2px;
+        position: relative;
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+    
+    .processing-indicator-container:hover {
+        transform: scale(1.1);
+        background-color: rgba(239, 68, 68, 0.3);
+        border: 2px solid rgba(239, 68, 68, 0.7);
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+    
+    .processing-indicator-container .loading-spinner,
+    .processing-indicator-container .cancel-x {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+
+    
+    /* Ensure the loading spinner animation works */
+    .processing-indicator-container .loading-spinner.animate-spin {
+        animation: spin 1s linear infinite !important;
+    }
+    
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    .processing-indicator-container .cancel-x:not(.hidden) {
+        animation: pulse-red 2s infinite;
+    }
+    
+    @keyframes pulse-red {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+</style>
+
+<div class="min-h-screen bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Upload Management</h1>
+            <p class="text-zinc-600 dark:text-zinc-400">Monitor and manage your uploaded documents and their processing status</p>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow border border-zinc-200 dark:border-zinc-700 mb-8">
+            <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
+                <h3 class="text-lg font-medium text-zinc-900 dark:text-white">Upload New Documents</h3>
+            </div>
+            <div class="p-6">
+                <!-- Document Type Selection -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-zinc-900 block mb-3 dark:text-zinc-200">Document Type</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="document_type" value="geological_survey" checked 
+                                   class="w-4 h-4 text-blue-600 bg-zinc-100 border-zinc-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600">
+                            <span class="ml-2 text-sm font-medium text-zinc-900 dark:text-zinc-300">Geological Survey</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="document_type" value="mining_map" 
+                                   class="w-4 h-4 text-blue-600 bg-zinc-100 border-zinc-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600">
+                            <span class="ml-2 text-sm font-medium text-zinc-900 dark:text-zinc-300">Mining Map</span>
+                        </label>
+                    </div>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                        Geological surveys will be processed via Adobe OCR. Mining maps will be processed with specialized map analysis methods.
+                    </p>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-zinc-900 block mb-2 dark:text-zinc-200">Select Files</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-zinc-300 dark:border-zinc-600 border-dashed rounded-lg hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors" id="upload-drop-zone">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-zinc-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-zinc-600 dark:text-zinc-400">
+                                <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-zinc-800 rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload files</span>
+                                    <input id="file-upload" name="files" type="file" class="sr-only" accept=".pdf,.csv,.xlsx,.xls" multiple>
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">PDF, CSV, XLSX, XLS up to 100MB each</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Files List -->
+                <div class="mb-6" id="selected-files-container" style="display: none;">
+                    <label class="text-sm font-medium text-zinc-900 block mb-2 dark:text-zinc-200">Selected Files</label>
+                    <div id="selected-files-list" class="max-h-48 overflow-y-auto bg-zinc-100 dark:bg-zinc-800 rounded-lg p-2 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-700 dark:text-zinc-300">
+                        <!-- Selected files will be listed here -->
+                    </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="flex justify-end">
+                    <button id="upload-files-btn" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                        Upload Files
+                    </button>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="mt-4 hidden">
+                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-zinc-900 dark:text-white">Uploading...</span>
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400" id="upload-progress-text">0%</span>
+                        </div>
+                        <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="upload-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 border border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Uploads</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ total_uploads }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 border border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Processed</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ processed_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 border border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center">
+                    <div class="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Processing</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ processing_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 border border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center">
+                    <div class="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
+                        <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Failed</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ failed_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow p-4 border border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center">
+                    <div class="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                        <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Unprocessed</p>
+                        <p class="text-2xl font-bold text-zinc-900 dark:text-white">{{ unprocessed_count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-zinc-200 dark:border-zinc-700">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button class="status-tab active border-blue-500 text-blue-600 dark:text-blue-400 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-status="all">
+                        All Uploads ({{ total_uploads }})
+                    </button>
+                    <button class="status-tab border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-status="processed">
+                        Processed ({{ processed_count }})
+                    </button>
+                    <button class="status-tab border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-status="processing">
+                        Processing ({{ processing_count }})
+                    </button>
+                    <button class="status-tab border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-status="failed">
+                        Failed ({{ failed_count }})
+                    </button>
+                    <button class="status-tab border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300 dark:text-zinc-400 dark:hover:text-zinc-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-status="unprocessed">
+                        Unprocessed ({{ unprocessed_count }})
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Processing Status Indicator 
+        <div id="processing-indicator" class="mb-4 hidden">
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-blue-800 dark:text-blue-200">Processing Documents</p>
+                            <p class="text-xs text-blue-600 dark:text-blue-300">Documents are being processed with OCR and text extraction. This page will automatically refresh to show updates.</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-medium text-blue-800 dark:text-blue-200" id="processing-count">0 files</div>
+                        <div class="text-xs text-blue-600 dark:text-blue-300">being processed</div>
+                    </div>
+                </div>
+                <!-- Overall Progress Bar 
+                <div class="mt-3">
+                    <div class="flex justify-between text-xs text-blue-600 dark:text-blue-300 mb-1">
+                        <span>Overall Progress</span>
+                        <span id="overall-progress-text">0%</span>
+                    </div>
+                    <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2 overflow-hidden">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-200 ease-out" id="overall-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Uploads List -->
+        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow border border-zinc-200 dark:border-zinc-700">
+            <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-zinc-900 dark:text-white">Uploaded Documents</h3>
+                <div class="flex items-center space-x-2">
+                    <span id="last-updated" class="text-xs text-zinc-500 dark:text-zinc-400">Last updated: {{ "now"|date:"H:i:s" }}</span>
+                    <button id="refresh-btn" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <thead class="bg-zinc-50 dark:bg-zinc-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">File</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Size</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Processing Method</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Attempts</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Uploaded</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700" id="uploads-table-body">
+                        {% for upload in uploads_data %}
+                        <tr class="upload-row" data-status="{{ upload.status }}" data-upload-id="{{ upload.id }}" data-model-type="{{ upload.model_type }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <svg class="h-10 w-10 text-zinc-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-zinc-900 dark:text-white">{{ upload.filename }}</div>
+                                        <div class="text-sm text-zinc-500 dark:text-zinc-400">{{ upload.model_type }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col space-y-2">
+                                    <div class="flex items-center">
+                                        <span class="status-badge status-{{ upload.status }} px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                            {% if upload.status == 'pending' %}Processing{% else %}{{ upload.status|title }}{% endif %}
+                                        </span>
+                                        {% if upload.status == 'processing' or upload.status == 'pending' %}
+                                        <div class="ml-2 processing-indicator-container relative cursor-pointer" 
+                                             data-upload-id="{{ upload.id }}" 
+                                             data-model-type="{{ upload.model_type }}"
+                                             title="Click to cancel processing">
+                                            <!-- Loading spinner (default state) -->
+                                            <div class="loading-spinner animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400 absolute inset-0 transition-opacity duration-300"></div>
+                                            <!-- Cancel X (hover state) -->
+                                            <div class="cancel-x opacity-0 absolute inset-0 z-10 bg-white dark:bg-zinc-800 rounded-full transition-opacity duration-300">
+                                                <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if upload.status == 'processing' or upload.status == 'pending' %}
+                                    <div class="w-full processing-progress-container">
+                                        <div class="flex justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                                            <span class="processing-step">Initializing...</span>
+                                            <span class="processing-progress-text">0%</span>
+                                        </div>
+                                        <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2 overflow-hidden">
+                                            <div class="processing-progress-bar bg-blue-600 h-2 rounded-full transition-all duration-200 ease-out" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ upload.file_size|filesizeformat }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ upload.processing_method|default:"-" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ upload.processing_attempts }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ upload.created_at|date:"M d, Y H:i" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {% if upload.can_retry %}
+                                <button class="retry-btn text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" 
+                                        data-upload-id="{{ upload.id }}" 
+                                        data-model-type="{{ upload.model_type }}">
+                                    Retry
+                                </button>
+                                {% else %}
+                                <span class="text-zinc-400 dark:text-zinc-500">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if upload.last_processing_error %}
+                        <tr class="error-row hidden" data-upload-id="{{ upload.id }}">
+                            <td colspan="7" class="px-6 py-2 bg-red-50 dark:bg-red-900/20">
+                                <div class="text-sm text-red-600 dark:text-red-400">
+                                    <strong>Error:</strong> {{ upload.last_processing_error }}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-zinc-500 dark:text-zinc-400">
+                                No uploads found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Retry Processing Modal -->
+<div id="retry-modal" class="hidden fixed inset-0 bg-zinc-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-zinc-800">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+                <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-zinc-900 dark:text-white mt-4">Retry Processing</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                    Are you sure you want to retry processing this document? This will attempt to extract text using Adobe OCR or fallback methods.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="confirm-retry" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    Retry Processing
+                </button>
+                <button id="cancel-retry" class="mt-2 px-4 py-2 bg-zinc-300 text-zinc-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:bg-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-500">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Processing Status Modal -->
+<div id="processing-modal" class="hidden fixed inset-0 bg-zinc-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-zinc-800">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/20">
+                <svg class="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-zinc-900 dark:text-white mt-4">Processing Document</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                    Please wait while we process your document. This may take several minutes for large files.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-processed {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-processing {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-failed {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status-unprocessed {
+    background-color: #fed7aa;
+    color: #9a3412;
+}
+
+.status-uploaded {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.dark .status-processed {
+    background-color: #064e3b;
+    color: #6ee7b7;
+}
+
+.dark .status-processing {
+    background-color: #451a03;
+    color: #fbbf24;
+}
+
+.dark .status-failed {
+    background-color: #450a0a;
+    color: #fca5a5;
+}
+
+.dark .status-unprocessed {
+    background-color: #451a03;
+    color: #fdba74;
+}
+
+.dark .status-uploaded {
+    background-color: #1e1b4b;
+    color: #a5b4fc;
+}
+
+.status-tab.active {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.dark .status-tab.active {
+    border-color: #60a5fa;
+    color: #60a5fa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event fired');
+    
+    // Check if APIClient is available
+    console.log('APIClient available:', typeof APIClient);
+    if (typeof APIClient !== 'undefined') {
+        console.log('APIClient constructor:', APIClient);
+    } else {
+        console.error('APIClient is not available!');
+    }
+    
+    // Check if ProgressTracker is available
+    console.log('ProgressTracker available:', typeof ProgressTracker);
+    if (typeof ProgressTracker !== 'undefined') {
+        console.log('ProgressTracker constructor:', ProgressTracker);
+    } else {
+        console.error('ProgressTracker is not available!');
+    }
+    
+    // Initialize progress tracker
+    const progressTracker = new ProgressTracker();
+    progressTracker.init();
+    
+    // File upload functionality
+    const fileUpload = document.getElementById('file-upload');
+    const uploadDropZone = document.getElementById('upload-drop-zone');
+    const selectedFilesContainer = document.getElementById('selected-files-container');
+    const selectedFilesList = document.getElementById('selected-files-list');
+    const uploadFilesBtn = document.getElementById('upload-files-btn');
+    const uploadProgress = document.getElementById('upload-progress');
+    const uploadProgressBar = document.getElementById('upload-progress-bar');
+    const uploadProgressText = document.getElementById('upload-progress-text');
+    
+    console.log('Elements found:', {
+        fileUpload: !!fileUpload,
+        uploadDropZone: !!uploadDropZone,
+        selectedFilesContainer: !!selectedFilesContainer,
+        selectedFilesList: !!selectedFilesList,
+        uploadFilesBtn: !!uploadFilesBtn,
+        uploadProgress: !!uploadProgress,
+        uploadProgressBar: !!uploadProgressBar,
+        uploadProgressText: !!uploadProgressText
+    });
+    
+    let selectedFiles = [];
+    
+    // File selection handling
+    fileUpload.addEventListener('change', function(e) {
+        console.log('File input change event fired');
+        console.log('Files selected:', e.target.files);
+        console.log('Files length:', e.target.files.length);
+        handleFiles(e.target.files);
+    });
+    
+    // Drag and drop functionality
+    uploadDropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadDropZone.classList.add('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+    });
+    
+    uploadDropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadDropZone.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+    });
+    
+    uploadDropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadDropZone.classList.remove('border-blue-400', 'bg-blue-50', 'dark:bg-blue-900/20');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    function handleFiles(files) {
+        selectedFiles = Array.from(files);
+        displaySelectedFiles();
+        updateUploadButton();
+    }
+    
+    function displaySelectedFiles() {
+        if (selectedFiles.length === 0) {
+            selectedFilesContainer.style.display = 'none';
+            return;
+        }
+        
+        selectedFilesContainer.style.display = 'block';
+        selectedFilesList.innerHTML = '';
+        
+        selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'flex items-center justify-between p-2 bg-white dark:bg-zinc-700 rounded border border-zinc-200 dark:border-zinc-600 mb-2';
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'flex items-center space-x-2';
+            
+            const fileIcon = document.createElement('svg');
+            fileIcon.className = 'w-4 h-4 text-zinc-400';
+            fileIcon.innerHTML = '<path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>';
+            
+            const fileName = document.createElement('span');
+            fileName.className = 'text-sm font-medium text-zinc-900 dark:text-white';
+            fileName.textContent = file.name;
+            
+            const fileSize = document.createElement('span');
+            fileSize.className = 'text-xs text-zinc-500 dark:text-zinc-400';
+            fileSize.textContent = `(${formatFileSize(file.size)})`;
+            
+            fileInfo.appendChild(fileIcon);
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileSize);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300';
+            removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            removeBtn.onclick = () => removeFile(index);
+            
+            fileItem.appendChild(fileInfo);
+            fileItem.appendChild(removeBtn);
+            selectedFilesList.appendChild(fileItem);
+        });
+    }
+    
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        displaySelectedFiles();
+        updateUploadButton();
+    }
+    
+    function updateUploadButton() {
+        uploadFilesBtn.disabled = selectedFiles.length === 0;
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Upload functionality
+    uploadFilesBtn.addEventListener('click', function() {
+        console.log('=== UPLOAD BUTTON CLICKED ===');
+        console.log('Upload button clicked!');
+        console.log('Selected files:', selectedFiles);
+        console.log('Selected files length:', selectedFiles.length);
+        
+        if (selectedFiles.length === 0) {
+            console.log('No files selected, returning');
+            return;
+        }
+        
+        const documentTypeElement = document.querySelector('input[name="document_type"]:checked');
+        console.log('Document type element:', documentTypeElement);
+        
+        if (!documentTypeElement) {
+            console.error('No document type selected');
+            showNotification('Please select a document type', 'error');
+            return;
+        }
+        
+        const documentType = documentTypeElement.value;
+        console.log('Document type:', documentType);
+        
+        console.log('=== CALLING uploadFiles FUNCTION ===');
+        uploadFiles(selectedFiles, documentType);
+    });
+    
+    function uploadFiles(files, documentType) {
+        console.log('=== uploadFiles FUNCTION CALLED ===');
+        console.log('uploadFiles called with:', { files, documentType });
+        console.log('Files to upload:', files.map(f => f.name));
+        
+        uploadProgress.classList.remove('hidden');
+        uploadFilesBtn.disabled = true;
+        
+        // Show initial progress
+        uploadProgressBar.style.width = '0%';
+        uploadProgressText.textContent = '0%';
+        
+        // Use XMLHttpRequest for real upload progress tracking
+        const xhr = new XMLHttpRequest();
+        console.log('XMLHttpRequest created');
+        
+        // Create FormData
+        const formData = new FormData();
+        formData.append('document_type', documentType);
+        console.log('Document type added to FormData:', documentType);
+        
+        files.forEach(file => {
+            formData.append('files', file);
+            console.log('Added file to FormData:', file.name, 'Size:', file.size);
+        });
+        
+        console.log('FormData created, starting real upload...');
+        
+        // Track real upload progress
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                console.log('Real upload progress:', percentComplete.toFixed(2) + '%');
+                uploadProgressBar.style.width = percentComplete + '%';
+                uploadProgressText.textContent = Math.round(percentComplete) + '%';
+            }
+        });
+        
+        // Handle upload completion
+        xhr.addEventListener('load', function() {
+            console.log('=== UPLOAD LOAD EVENT FIRED ===');
+            console.log('Upload completed, response status:', xhr.status);
+            console.log('Response text:', xhr.responseText);
+            
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    console.log('Upload response parsed successfully:', response);
+                    
+                    // Upload is complete - show 100% and success
+                    uploadProgressBar.style.width = '100%';
+                    uploadProgressText.textContent = '100%';
+                    
+                    // Add visual completion indicator
+                    uploadProgressBar.classList.add('bg-green-500');
+                    uploadProgressText.classList.add('text-green-700', 'font-bold');
+                    
+                    if (response.success) {
+                        console.log('=== UPLOAD SUCCESS - STARTING REFRESH MECHANISM ===');
+                        showNotification('Files uploaded successfully! Processing will begin shortly...', 'success');
+                        
+                        // Reset form
+                        selectedFiles = [];
+                        fileUpload.value = '';
+                        displaySelectedFiles();
+                        updateUploadButton();
+                        
+                        // IMMEDIATE REFRESH - Force refresh right away
+                        console.log('=== FORCING IMMEDIATE REFRESH ===');
+                        setTimeout(() => {
+                            console.log('Executing immediate refresh...');
+                            window.location.reload();
+                        }, 1000);
+                        
+                        // Track refresh attempts
+                        let refreshAttempts = 0;
+                        const maxRefreshAttempts = 5;
+                        
+                        // Function to attempt refresh with fallback
+                        function attemptRefresh() {
+                            refreshAttempts++;
+                            console.log(`Refresh attempt ${refreshAttempts}/${maxRefreshAttempts}`);
+                            
+                            if (refreshAttempts >= maxRefreshAttempts) {
+                                console.log('Max refresh attempts reached, reloading page as fallback');
+                                showNotification('Reloading page to show uploaded files...', 'info');
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
+                                return;
+                            }
+                            
+                            refreshUploadsList();
+                        }
+                        
+                        // Wait longer for backend to fully process and commit to database
+                        console.log('Waiting for backend to fully process upload...');
+                        
+                        // Start continuous polling for new files
+                        let pollCount = 0;
+                        const maxPolls = 20; // Poll for up to 20 seconds
+                        const pollInterval = 1000; // Poll every second
+                        
+                        const pollForNewFiles = () => {
+                            pollCount++;
+                            console.log(`Polling for new files (attempt ${pollCount}/${maxPolls})`);
+                            
+                            if (pollCount >= maxPolls) {
+                                console.log('Max polling attempts reached, stopping poll');
+                                return;
+                            }
+                            
+                            // Check if we have new files by refreshing the list
+                            fetch('/upload-management/')
+                                .then(response => response.text())
+                                .then(html => {
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(html, 'text/html');
+                                    const newTableBody = doc.getElementById('uploads-table-body');
+                                    const currentTableBody = document.getElementById('uploads-table-body');
+                                    
+                                    if (newTableBody && currentTableBody) {
+                                        const oldRowCount = currentTableBody.children.length;
+                                        const newRowCount = newTableBody.children.length;
+                                        
+                                        console.log(`Poll result: old=${oldRowCount}, new=${newRowCount}`);
+                                        
+                                        if (newRowCount > oldRowCount) {
+                                            console.log('New files detected during polling!');
+                                            showNotification(`${newRowCount - oldRowCount} new file(s) found!`, 'success');
+                                            refreshUploadsList();
+                                            return; // Stop polling
+                                        }
+                                    }
+                                    
+                                    // Continue polling if no new files found
+                                    setTimeout(pollForNewFiles, pollInterval);
+                                })
+                                .catch(error => {
+                                    console.error('Polling error:', error);
+                                    setTimeout(pollForNewFiles, pollInterval);
+                                });
+                        };
+                        
+                        // Start polling after a short delay
+                        setTimeout(pollForNewFiles, 1000);
+                        
+                        // First refresh after 2 seconds (backend processing time)
+                        setTimeout(() => {
+                            console.log('First refresh attempt (2s delay)...');
+                            attemptRefresh();
+                        }, 2000);
+                        
+                        // Second refresh after 5 seconds (database commit time)
+                        setTimeout(() => {
+                            console.log('Second refresh attempt (5s delay)...');
+                            attemptRefresh();
+                        }, 5000);
+                        
+                        // Third refresh after 8 seconds (ensure processing is complete)
+                        setTimeout(() => {
+                            console.log('Third refresh attempt (8s delay)...');
+                            attemptRefresh();
+                        }, 8000);
+                        
+                        // Fourth refresh after 12 seconds (final attempt)
+                        setTimeout(() => {
+                            console.log('Fourth refresh attempt (12s delay)...');
+                            attemptRefresh();
+                        }, 12000);
+                        
+                        // Final refresh after 15 seconds as last resort
+                        setTimeout(() => {
+                            console.log('Final refresh attempt (15s delay)...');
+                            attemptRefresh();
+                        }, 15000);
+                    } else {
+                        console.log('Upload response indicates failure:', response.error);
+                        showNotification(`Upload failed: ${response.error}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('=== ERROR PARSING UPLOAD RESPONSE ===');
+                    console.error('Error parsing upload response:', error);
+                    console.error('Response text was:', xhr.responseText);
+                    showNotification('Upload completed but response parsing failed', 'error');
+                }
+            } else {
+                console.error('=== UPLOAD FAILED WITH STATUS ===');
+                console.error('Upload failed with status:', xhr.status);
+                console.error('Response text:', xhr.responseText);
+                showNotification(`Upload failed with status: ${xhr.status}`, 'error');
+            }
+        });
+        
+        // Handle upload errors
+        xhr.addEventListener('error', function() {
+            console.error('=== UPLOAD ERROR EVENT FIRED ===');
+            console.error('Upload error occurred');
+            showNotification('Upload failed due to network error', 'error');
+        });
+        
+        // Handle upload timeout
+        xhr.addEventListener('timeout', function() {
+            console.error('=== UPLOAD TIMEOUT EVENT FIRED ===');
+            console.error('Upload timed out');
+            showNotification('Upload timed out', 'error');
+        });
+        
+        // Handle upload abort
+        xhr.addEventListener('abort', function() {
+            console.error('=== UPLOAD ABORT EVENT FIRED ===');
+            console.error('Upload was aborted');
+            showNotification('Upload was cancelled', 'error');
+        });
+        
+        // Start the upload
+        console.log('=== STARTING XMLHttpRequest UPLOAD ===');
+        xhr.open('POST', '/pdfocr/upload-multiple/');
+        xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
+        console.log('XMLHttpRequest configured, sending FormData...');
+        xhr.send(formData);
+        console.log('FormData sent, upload started...');
+        
+        // FORCE REFRESH AFTER UPLOAD - This will trigger regardless of completion handler
+        console.log('=== SETTING UP FORCED REFRESH TIMER ===');
+        setTimeout(() => {
+            console.log('=== FORCED REFRESH TIMER TRIGGERED ===');
+            console.log('Upload should be complete, forcing page reload...');
+            showNotification('Upload completed! Refreshing page to show files...', 'success');
+            window.location.reload();
+        }, 5000); // 5 second timeout - upload should definitely be complete by then
+        
+        // Keep progress visible for longer to show completion
+        setTimeout(() => {
+            uploadProgress.classList.add('hidden');
+            uploadFilesBtn.disabled = false;
+            uploadProgressBar.style.width = '0%';
+            uploadProgressText.textContent = '0%';
+            uploadProgressBar.classList.remove('bg-green-500');
+            uploadProgressText.classList.remove('text-green-700', 'font-bold');
+        }, 3000);
+    }
+    
+    // Helper function to get CSRF token
+    function getCSRFToken() {
+        const token = document.querySelector('meta[name="csrf-token"]');
+        if (token) {
+            return token.getAttribute('content');
+        }
+        // Fallback to getting from cookie
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Status tab functionality
+    const statusTabs = document.querySelectorAll('.status-tab');
+    const uploadRows = document.querySelectorAll('.upload-row');
+    
+    statusTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const status = this.getAttribute('data-status');
+            
+            // Update active tab
+            statusTabs.forEach(t => {
+                t.classList.remove('active', 'border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+                t.classList.add('border-transparent', 'text-zinc-500', 'dark:text-zinc-400');
+            });
+            this.classList.add('active', 'border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+            this.classList.remove('border-transparent', 'text-zinc-500', 'dark:text-zinc-400');
+            
+            // Filter rows
+            uploadRows.forEach(row => {
+                if (status === 'all' || row.getAttribute('data-status') === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Real-time status updates and auto-refresh functionality
+    function checkProcessingStatus() {
+        const processingRows = document.querySelectorAll('.upload-row[data-status="processing"], .upload-row[data-status="pending"]');
+        
+        if (processingRows.length > 0) {
+            // Progress tracker will handle the rest
+            progressTracker.startTrackingProcessingFiles();
+        }
+    }
+    
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        document.getElementById('last-updated').textContent = `Last updated: ${timeString}`;
+    }
+    
+    function refreshUploadsList() {
+        console.log('=== REFRESH UPLOADS LIST STARTED ===');
+        console.log('Current time:', new Date().toISOString());
+        
+        // Show loading indicator
+        const refreshBtn = document.getElementById('refresh-btn');
+        if (refreshBtn) {
+            console.log('Found refresh button, showing loading indicator');
+            refreshBtn.innerHTML = '<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        } else {
+            console.warn('Refresh button not found');
+        }
+        
+        console.log('Making fetch request to /upload-management/');
+        
+        fetch('/upload-management/')
+            .then(response => {
+                console.log('Fetch response received:', response);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                console.log('HTML response received, length:', html.length);
+                console.log('HTML preview (first 200 chars):', html.substring(0, 200));
+                
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Update the table body
+                const newTableBody = doc.getElementById('uploads-table-body');
+                const currentTableBody = document.getElementById('uploads-table-body');
+                
+                console.log('Table body elements found:', {
+                    newTableBody: !!newTableBody,
+                    currentTableBody: !!currentTableBody
+                });
+                
+                if (newTableBody && currentTableBody) {
+                    console.log('Updating table body...');
+                    console.log('New table body has', newTableBody.children.length, 'rows');
+                    console.log('Current table body has', currentTableBody.children.length, 'rows');
+                    
+                    // Check if we have new files
+                    const oldRowCount = currentTableBody.children.length;
+                    const newRowCount = newTableBody.children.length;
+                    console.log(`Row count comparison: old=${oldRowCount}, new=${newRowCount}`);
+                    
+                    // Log the content of new table body for debugging
+                    console.log('New table body HTML:', newTableBody.innerHTML);
+                    
+                    currentTableBody.innerHTML = newTableBody.innerHTML;
+                    console.log('Table body updated successfully');
+                    
+                    // Show notification if new files were added
+                    if (newRowCount > oldRowCount) {
+                        const newFilesCount = newRowCount - oldRowCount;
+                        console.log(`New files detected: ${newFilesCount}`);
+                        showNotification(`${newFilesCount} new file(s) added to the list!`, 'success');
+                    } else if (newRowCount === oldRowCount) {
+                        console.log('No new files detected, row count unchanged');
+                    } else {
+                        console.log('Row count decreased, this is unexpected');
+                    }
+                    
+                    // Reinitialize progress tracking for any new processing files
+                    const processingRows = currentTableBody.querySelectorAll('.upload-row[data-status="processing"], .upload-row[data-status="pending"]');
+                    console.log(`Found ${processingRows.length} processing rows to track`);
+                    
+                    processingRows.forEach(row => {
+                        const uploadId = row.getAttribute('data-upload-id');
+                        if (uploadId && typeof progressTracker !== 'undefined') {
+                            console.log('Starting progress tracking for upload ID:', uploadId);
+                            progressTracker.startTrackingFile(uploadId, row);
+                        }
+                    });
+                } else {
+                    console.error('Could not find table body elements:', {
+                        newTableBody: newTableBody,
+                        currentTableBody: currentTableBody
+                    });
+                }
+                
+                // Update statistics
+                try {
+                    const newStats = {
+                        total: doc.querySelector('[data-status="all"]')?.textContent.match(/\((\d+)\)/)?.[1] || '0',
+                        processed: doc.querySelector('[data-status="processed"]')?.textContent.match(/\((\d+)\)/)?.[1] || '0',
+                        processing: doc.querySelector('[data-status="processing"]')?.textContent.match(/\((\d+)\)/)?.[1] || '0',
+                        failed: doc.querySelector('[data-status="failed"]')?.textContent.match(/\((\d+)\)/)?.[1] || '0',
+                        unprocessed: doc.querySelector('[data-status="unprocessed"]')?.textContent.match(/\((\d+)\)/)?.[1] || '0'
+                    };
+                    
+                    console.log('New stats:', newStats);
+                    
+                    // Update the statistics cards
+                    document.querySelectorAll('.bg-white.dark\\:bg-zinc-800.rounded-lg.shadow.p-4').forEach((card, index) => {
+                        const countElement = card.querySelector('.text-2xl.font-bold');
+                        if (countElement) {
+                            const counts = [newStats.total, newStats.processed, newStats.processing, newStats.failed, newStats.unprocessed];
+                            if (counts[index] !== undefined) {
+                                countElement.textContent = counts[index];
+                            }
+                        }
+                    });
+                    
+                    // Update tab counts
+                    document.querySelectorAll('.status-tab').forEach(tab => {
+                        const status = tab.getAttribute('data-status');
+                        const count = newStats[status] || '0';
+                        tab.textContent = tab.textContent.replace(/\(\d+\)/, `(${count})`);
+                    });
+                } catch (error) {
+                    console.warn('Error updating statistics:', error);
+                }
+                
+                updateLastUpdated();
+                checkProcessingStatus();
+                
+                // Reinitialize event listeners for new elements
+                initializeRetryButtons();
+                initializeCancelButtons();
+                
+                console.log('=== REFRESH UPLOADS LIST COMPLETED SUCCESSFULLY ===');
+            })
+            .catch(error => {
+                console.error('=== REFRESH UPLOADS LIST FAILED ===');
+                console.error('Error refreshing uploads list:', error);
+                console.error('Error stack:', error.stack);
+                showNotification('Failed to refresh uploads list: ' + error.message, 'error');
+            })
+            .finally(() => {
+                // Reset refresh button
+                if (refreshBtn) {
+                    refreshBtn.innerHTML = '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+                }
+                console.log('=== REFRESH UPLOADS LIST FINISHED ===');
+            });
+    }
+    
+    function startAutoRefresh() {
+        // Progress tracker handles auto-refresh
+    }
+    
+    function stopAutoRefresh() {
+        // Progress tracker handles auto-refresh
+    }
+    
+    // Manual refresh button
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            this.classList.add('animate-spin');
+            refreshUploadsList();
+            setTimeout(() => {
+                this.classList.remove('animate-spin');
+            }, 1000);
+        });
+    }
+    
+    // Initialize retry buttons
+    function initializeRetryButtons() {
+        const retryButtons = document.querySelectorAll('.retry-btn');
+        const retryModal = document.getElementById('retry-modal');
+        const processingModal = document.getElementById('processing-modal');
+        const confirmRetryBtn = document.getElementById('confirm-retry');
+        const cancelRetryBtn = document.getElementById('cancel-retry');
+        
+        let currentUploadId = null;
+        let currentModelType = null;
+        
+        retryButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentUploadId = this.getAttribute('data-upload-id');
+                currentModelType = this.getAttribute('data-model-type');
+                retryModal.classList.remove('hidden');
+            });
+        });
+        
+        confirmRetryBtn.addEventListener('click', function() {
+            retryModal.classList.add('hidden');
+            processingModal.classList.remove('hidden');
+            
+            // Make API call to retry processing
+            fetch(`/mining/api/retry-processing/${currentUploadId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    model_type: currentModelType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                processingModal.classList.add('hidden');
+                
+                if (data.success) {
+                    showNotification('Processing completed successfully!', 'success');
+                    // Refresh the list to show updated status
+                    setTimeout(() => {
+                        refreshUploadsList();
+                    }, 1000);
+                } else {
+                    showNotification(`Processing failed: ${data.error}`, 'error');
+                }
+            })
+            .catch(error => {
+                processingModal.classList.add('hidden');
+                showNotification(`Error: ${error.message}`, 'error');
+            });
+        });
+        
+        cancelRetryBtn.addEventListener('click', function() {
+            retryModal.classList.add('hidden');
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === retryModal) {
+                retryModal.classList.add('hidden');
+            }
+            if (event.target === processingModal) {
+                processingModal.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Initialize cancel processing buttons
+    function initializeCancelButtons() {
+        const cancelButtons = document.querySelectorAll('.processing-indicator-container');
+        cancelButtons.forEach(button => {
+            // Add hover events with small delay to prevent accidental triggers
+            let hoverTimeout;
+            
+                                            button.addEventListener('mouseenter', function() {
+                                    hoverTimeout = setTimeout(() => {
+                                        const loadingSpinner = this.querySelector('.loading-spinner');
+                                        const cancelX = this.querySelector('.cancel-x');
+                                        
+                                        if (loadingSpinner && cancelX) {
+                                            // Smooth transition: fade out spinner, fade in cancel X
+                                            loadingSpinner.classList.add('opacity-0');
+                                            cancelX.classList.remove('opacity-0');
+                                        }
+                                    }, 50); // Reduced delay for more responsive feel
+                                });
+                                
+                                button.addEventListener('mouseleave', function() {
+                                    clearTimeout(hoverTimeout);
+                                    const loadingSpinner = this.querySelector('.loading-spinner');
+                                    const cancelX = this.querySelector('.cancel-x');
+                                    
+                                    if (loadingSpinner && cancelX) {
+                                        // Smooth transition: fade out cancel X, fade in spinner
+                                        cancelX.classList.add('opacity-0');
+                                        loadingSpinner.classList.remove('opacity-0');
+                                    }
+                                });
+            
+            button.addEventListener('click', async function() {
+                const uploadId = this.getAttribute('data-upload-id');
+                const modelType = this.getAttribute('data-model-type');
+                
+                // Show confirmation dialog
+                if (!confirm('Are you sure you want to cancel processing this file?')) {
+                    return;
+                }
+                
+                try {
+                    // Show loading state
+                    this.style.pointerEvents = 'none';
+                    this.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 dark:border-red-400"></div>';
+                    
+                    // Send cancel request
+                    const response = await fetch(`/api/cancel-processing/${uploadId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({
+                            model_type: modelType
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Update the row to show cancelled state
+                        const row = this.closest('.upload-row');
+                        if (row) {
+                            // Update status badge
+                            const statusBadge = row.querySelector('.status-badge');
+                            if (statusBadge) {
+                                statusBadge.textContent = 'Failed';
+                                statusBadge.className = 'status-badge status-failed px-2 inline-flex text-xs leading-5 font-semibold rounded-full';
+                            }
+                            
+                            // Update row status
+                            row.setAttribute('data-status', 'failed');
+                            
+                            // Hide progress container
+                            const progressContainer = row.querySelector('.processing-progress-container');
+                            if (progressContainer) {
+                                progressContainer.classList.add('hidden');
+                            }
+                            
+                            // Remove the cancel button
+                            this.remove();
+                            
+                            // Show success message
+                            showNotification('Processing cancelled successfully', 'success');
+                        }
+                    } else {
+                        throw new Error(data.error || 'Failed to cancel processing');
+                    }
+                } catch (error) {
+                    console.error('Error cancelling processing:', error);
+                    showNotification('Failed to cancel processing: ' + error.message, 'error');
+                    
+                    // Restore original state
+                    this.style.pointerEvents = 'auto';
+                    this.innerHTML = `
+                        <div class="loading-spinner animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400 absolute inset-0 transition-opacity duration-300"></div>
+                        <div class="cancel-x opacity-0 absolute inset-0 z-10 bg-white dark:bg-zinc-800 rounded-full transition-opacity duration-300">
+                            <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
+                    `;
+                }
+            });
+        });
+    }
+    
+    // Initialize everything
+    function initializeUploadManagement() {
+        checkProcessingStatus();
+        startAutoRefresh();
+        initializeRetryButtons();
+        initializeCancelButtons();
+        updateLastUpdated();
+        
+        // Add refresh button click handler
+        const refreshBtn = document.getElementById('refresh-btn');
+        if (refreshBtn) {
+            console.log('Adding click handler to refresh button');
+            refreshBtn.addEventListener('click', function() {
+                console.log('Refresh button clicked manually');
+                showNotification('Manually refreshing uploads list...', 'info');
+                refreshUploadsList();
+            });
+        } else {
+            console.warn('Refresh button not found during initialization');
+        }
+    }
+    
+    // Initialize on page load
+    initializeUploadManagement();
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        if (progressTracker) {
+            progressTracker.destroy();
+        }
+    });
+    
+    // Utility functions
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
+            type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+            type === 'warning' ? 'bg-yellow-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %} 
