@@ -1,0 +1,51 @@
+# Production requirements for GoldMineAI
+# Core Django and web framework
+Django==5.2.1
+djangorestframework==3.16.0
+django-cors-headers==4.7.0
+django-environ==0.12.0
+django-storages==1.14.2
+django-tailwind==4.0.1
+
+# Database
+psycopg2-binary==2.9.10
+
+# Web server
+gunicorn==23.0.0
+whitenoise==6.9.0
+
+# Core utilities
+python-decouple==3.8
+python-dotenv==1.1.0
+dj-database-url==2.1.0
+numpy==2.2.6
+pandas==2.2.3
+scikit-learn==1.6.1
+joblib==1.5.0
+
+# File processing
+Pillow==11.2.1
+PyPDF2==3.0.1
+
+# Geospatial
+geopandas==1.0.1
+shapely==2.1.1
+pyproj==3.7.1
+geocoder==1.38.1
+
+# AI/ML
+spacy==3.7.2
+transformers==4.52.4
+torch==2.7.1
+openai==1.88.0
+
+# HTTP and API
+requests==2.32.3
+httpx==0.28.1
+fastapi==0.115.12
+uvicorn==0.34.2
+
+# Utilities
+click==8.2.1
+tqdm==4.67.1
+rich==14.0.0

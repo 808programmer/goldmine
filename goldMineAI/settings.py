@@ -72,12 +72,14 @@ ROOT_URLCONF = 'goldMineAI.urls'
 
 INTERNAL_IPS = ['127.0.0.1']
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS configuration
+CORS_ORIGIN_ALLOW_ALL = config('CORS_ALLOW_ALL', default=False, cast=bool)
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3000',
-#     'http://127.0.0.1:8000',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
 
 # Adobe PDF Services API settings
 ADOBE_CLIENT_ID = config('ADOBE_CLIENT_ID')
@@ -200,7 +202,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles' 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+ 
 
 #STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

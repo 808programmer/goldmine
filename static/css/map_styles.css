@@ -1011,3 +1011,224 @@
     background: rgba(59, 130, 246, 0.1);
     border-left-color: #3b82f6;
 }
+
+/* Prediction Popup Styles */
+.prediction-popup {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 300px;
+    padding: 0;
+}
+
+.prediction-popup h3 {
+    margin: 0 0 10px 0;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.prediction-details {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+.prediction-details p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.prediction-details strong {
+    color: #495057;
+    font-weight: 600;
+}
+
+.prediction-meta {
+    padding: 10px 15px;
+    background: #e9ecef;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.prediction-meta small {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+/* Probability Classes */
+.probability-high {
+    color: #28a745;
+    font-weight: 700;
+    background: #d4edda;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.probability-medium {
+    color: #ffc107;
+    font-weight: 700;
+    background: #fff3cd;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.probability-low {
+    color: #fd7e14;
+    font-weight: 700;
+    background: #ffe5d0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.probability-very-low {
+    color: #dc3545;
+    font-weight: 700;
+    background: #f8d7da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+/* Confidence Classes */
+.confidence-high {
+    color: #28a745;
+    font-weight: 700;
+    background: #d4edda;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.confidence-medium {
+    color: #17a2b8;
+    font-weight: 700;
+    background: #d1ecf1;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.confidence-low {
+    color: #ffc107;
+    font-weight: 700;
+    background: #fff3cd;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.confidence-very-low {
+    color: #6c757d;
+    font-weight: 700;
+    background: #e2e3e5;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+/* Mapbox Popup Customization */
+.mapboxgl-popup-content {
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.mapboxgl-popup-close-button {
+    color: #6c757d;
+    font-size: 18px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 14px;
+    top: 10px;
+    right: 10px;
+}
+
+.mapboxgl-popup-close-button:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #495057;
+}
+
+.mapboxgl-popup-tip {
+    border-top-color: #f8f9fa;
+}
+
+/* Prediction Type Legend */
+.prediction-legend {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.prediction-legend h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    text-align: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 12px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid #000;
+}
+
+.legend-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .prediction-popup {
+        max-width: 250px;
+    }
+    
+    .prediction-details {
+        padding: 10px;
+    }
+    
+    .prediction-details p {
+        font-size: 13px;
+        margin: 6px 0;
+    }
+    
+    .prediction-legend {
+        top: 10px;
+        right: 10px;
+        min-width: 180px;
+        padding: 10px;
+    }
+    
+    .legend-item {
+        font-size: 11px;
+        margin: 6px 0;
+    }
+}

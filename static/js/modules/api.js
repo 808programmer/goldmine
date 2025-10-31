@@ -2,8 +2,21 @@
  * API Client Module
  * Handles all API communication with the backend
  */
+console.log('🚀 Loading APIClient module...');
+
+// Test if we can define a simple class
+class TestClass {
+    constructor() {
+        console.log('✅ TestClass constructor called');
+    }
+}
+
+console.log('✅ TestClass defined:', typeof TestClass);
+
+
 class APIClient {
     constructor(baseURL = '') {
+        console.log('🔧 APIClient constructor called with baseURL:', baseURL);
         this.baseURL = baseURL;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
@@ -647,7 +660,20 @@ class APIClient {
             default: return '❓';
         }
     }
-}
+};
 
 // Export for use in other modules
-window.APIClient = APIClient; 
+console.log('🔧 About to export APIClient to window...');
+console.log('🔍 APIClient class type:', typeof APIClient);
+console.log('🔍 APIClient class:', APIClient);
+
+try {
+    window.APIClient = APIClient;
+    console.log('✅ APIClient successfully exported to window');
+    console.log('🔍 Testing APIClient access:', typeof window.APIClient);
+    console.log('🔍 Testing direct APIClient access:', typeof APIClient);
+    console.log('🔍 Window APIClient:', window.APIClient);
+} catch (error) {
+    console.error('❌ Error exporting APIClient:', error);
+    console.error('❌ Error details:', error.stack);
+} 

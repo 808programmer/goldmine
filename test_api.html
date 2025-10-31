@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>APIClient Test</title>
+</head>
+<body>
+    <h1>APIClient Test</h1>
+    <div id="status"></div>
+    
+    <script>
+        console.log('🚀 Starting APIClient test...');
+        console.log('APIClient before loading:', typeof APIClient);
+        console.log('Window APIClient before loading:', typeof window.APIClient);
+    </script>
+    
+    <script src="/static/js/modules/api.js"></script>
+    
+    <script>
+        console.log('APIClient after loading:', typeof APIClient);
+        console.log('Window APIClient after loading:', typeof window.APIClient);
+        
+        if (typeof APIClient !== 'undefined') {
+            console.log('✅ APIClient class is available');
+            document.getElementById('status').innerHTML = '<p style="color: green;">✅ APIClient loaded successfully!</p>';
+            
+            try {
+                const client = new APIClient();
+                console.log('✅ APIClient instantiated successfully:', client);
+                document.getElementById('status').innerHTML += '<p style="color: green;">✅ APIClient instantiated successfully!</p>';
+            } catch (error) {
+                console.error('❌ Error instantiating APIClient:', error);
+                document.getElementById('status').innerHTML += '<p style="color: red;">❌ Error instantiating APIClient: ' + error.message + '</p>';
+            }
+        } else {
+            console.log('❌ APIClient class is NOT available');
+            document.getElementById('status').innerHTML = '<p style="color: red;">❌ APIClient failed to load</p>';
+        }
+    </script>
+</body>
+</html>

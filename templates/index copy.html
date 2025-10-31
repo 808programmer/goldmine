@@ -1,0 +1,2029 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Prevent flash during page transitions -->
+    <style>
+        html.loading {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
+    <script>
+        // Hide page immediately to prevent FOUC
+        document.documentElement.classList.add('loading');
+        
+        // Remove loading class when page is ready
+        function removeLoading() {
+            document.documentElement.classList.remove('loading');
+        }
+        
+        // Remove loading when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', removeLoading);
+        } else {
+            removeLoading();
+        }
+        
+        // Also remove loading after a timeout as fallback
+        setTimeout(removeLoading, 1000);
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/gold_price_widget.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/support_chat.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" />
+    <title>Goldmine AI</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- OR download tailwind.min cdn file and paste your file -->
+        <!-- <script src="./assets/tailwind/tailwind.min.js"></script> -->
+        <!-- Configure your strategy -->
+        <script>
+                tailwind.config = {
+                    darkMode: 'class', /* class/media, here we use class to enable manually dark mode */
+                }
+        </script>
+        <script>
+            /**
+             * Loads the theme stored
+            */
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                    document.documentElement.classList.remove('dark')
+            }
+        </script>
+    <script src="../static/tailwind.config.js"></script>
+    {% tailwind_css %}
+    <script src="{% static 'js/gold_price_tracker.js' %}" defer></script>
+    {% block head_extra %}{% endblock %}
+</head>
+
+
+<body class="animate-fade transition-colors duration-300 ease-in-out flex flex-col h-screen justify-between bg-zinc-300 dark:bg-zinc-900 theme-transition">
+    <header>
+        <nav class="flex justify-between items-center w-[98%] mx-auto p-4">
+          <div class="">
+            <!--Site logo and name-->
+              <a href="{% url 'home' %}" class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <img src="/static/images/goldmine_ai_black_fonts.png" class="invert dark:invert-0 h-12" alt="Goldmine AI Logo"/>
+                  <span class="self-center text-xl font-semibold whitespace-nowrap text-zinc-950 dark:text-white">Goldmine AI</span>
+              </a>
+          </div>
+
+                {# nav bar buttons #}
+                  <div class="md:static absolute md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5">
+                    <ul class="flex items-center md:flex-row flex-col md:items-center md:gap-[5vw] gap-8">
+                      <li>
+                        <a href="{% url 'maps' %}" class="block py-2 px-5 text-gray-900 rounded-none hover:bg-gray-100 hover:bg-transparent hover:text-blue-900 md:p-0 dark:text-white dark:hover:text-blue-900 dark:hover:bg-gray-700 dark:hover:bg-transparent dark:border-gray-700 transition-all font-bold">Maps</a>
+                      </li>
+                      <!-- <li>
+                        <a href="{% url 'predict' %}" class="block py-2 px-5 text-gray-900 rounded-none hover:bg-gray-100 hover:bg-transparent hover:text-blue-900 md:p-0 dark:text-white dark:hover:text-blue-900 dark:hover:bg-gray-700 dark:hover:bg-transparent dark:border-gray-700 transition-all font-bold">Predict</a>
+                      </li> -->
+                      <li>
+                        <a href="{% url 'about' %}" class="block py-2 px-5 text-gray-900 rounded-none hover:bg-gray-100 hover:bg-transparent hover:text-blue-900 md:p-0 dark:text-white dark:hover:text-blue-900 dark:hover:bg-gray-700 dark:hover:bg-transparent dark:border-gray-700 transition-all font-bold">About</a>
+                      </li>
+                    </ul>
+                  </div>
+
+              <div class="flex items-center gap-5">
+                  <!-- Gold Price Widget (Compact version in navbar) -->
+                  <div id="gold-price-widget-small" class="flex items-center bg-transparent dark:bg-zinc-900 rounded-full px-3 py-1 shadow-sm hover:shadow-md transition-all cursor-pointer" onclick="document.getElementById('gold-price-widget').scrollIntoView({behavior: 'smooth'});">
+                      <img src="{% static 'img/gold-bar.svg' %}" alt="Gold" class="w-5 h-5 mr-2 gold-icon animate-pulse-slow" />
+                      <div>
+                          <span id="gold-price-value-small" class="font-bold text-black dark:text-white">$0.00</span>
+                          <!-- <span class="text-xs text-zinc-500 dark:text-zinc-400">/g</span> -->
+                      </div>
+                  </div>
+
+                  {#Dark Mode/Light Mode Switch#}
+                  <button id="theme-toggle" type="button" class="hover:transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-slate-700 rounded-lg text-sm p-2.5">
+                      <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                      </svg>
+                      <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                      </svg>
+                  </button>
+
+                  <!-- Upload File Button -->
+                  <a href="/upload-management/" 
+                     class="transition-all flex bg-zinc-700 hover:bg-zinc-800 text-white text-base font-medium px-4 py-2 outline-none rounded-full w-max cursor-pointer mx-auto">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 mr-0 fill-white inline" viewBox="0 0 32 32">
+                        <path d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z" data-original="#000000" />
+                        <path d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z" data-original="#000000" />
+                      </svg>
+                      <!-- Upload -->
+                  </a>
+                  
+
+
+                  <!-- File Upload Modal -->
+                  <div id="upload-modal" aria-hidden="true" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 justify-center items-center">
+                      <div class="transition-all relative w-full max-w-md px-4 h-full md:h-auto">
+                          <div class="bg-zinc-50 rounded-lg shadow relative dark:bg-zinc-700">
+                              <div class="flex justify-end p-2">
+                                  <button type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-800 dark:hover:text-white" data-modal-toggle="upload-modal">
+                                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                  </button>
+                              </div>
+                              <div class="p-6 pt-0" id="upload-modal-content">
+                                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-4">Upload Files</h3>
+                                  
+                                  <!-- Document Type Selection (keeping radio buttons) -->
+                                  <div class="mb-6">
+                                      <label class="text-sm font-medium text-zinc-900 block mb-3 dark:text-zinc-200">Document Type</label>
+                                      <div class="flex items-center space-x-4">
+                                          <label class="flex items-center">
+                                              <input type="radio" name="document_type" value="geological_survey" checked 
+                                                     class="w-4 h-4 text-blue-600 bg-zinc-100 border-zinc-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600">
+                                              <span class="ml-2 text-sm font-medium text-zinc-900 dark:text-zinc-300">Geological Survey</span>
+                                          </label>
+                                          <label class="flex items-center">
+                                              <input type="radio" name="document_type" value="mining_map" 
+                                                     class="w-4 h-4 text-blue-600 bg-zinc-100 border-zinc-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-zinc-800 focus:ring-2 dark:bg-zinc-700 dark:border-zinc-600">
+                                              <span class="ml-2 text-sm font-medium text-zinc-900 dark:text-zinc-300">Mining Map</span>
+                                          </label>
+                                      </div>
+                                      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                                          Geological surveys will be processed via Adobe OCR. Mining maps will be processed with specialized map analysis methods.
+                                      </p>
+                                  </div>
+                                  
+                                  <div class="mb-4">
+                                      <label class="text-sm font-medium text-zinc-900 block mb-2 dark:text-zinc-200">Uploaded Files</label>
+                                      <div id="uploaded-files-list" class="max-h-48 overflow-y-auto bg-zinc-100 dark:bg-zinc-800 rounded-lg p-2 border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-700 dark:text-zinc-300">
+                                          <div id="uploaded-files-empty" class="text-center text-zinc-400 dark:text-zinc-500">No files uploaded yet.</div>
+                                          <!-- Uploaded file items will be injected here -->
+                                      </div>
+                                  </div>
+                                  <div class="mt-6 flex justify-end">
+                                      <button id="cancel-upload" class="text-zinc-600 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm px-4 py-2 mr-2 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white">Close</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Upload Success Modal -->
+                  <div id="success-modal" aria-hidden="true" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 justify-center items-center">
+                      <div class="transition-all relative w-full max-w-2xl px-4 h-full md:h-auto">
+                          <div class="bg-zinc-50 rounded-lg shadow relative dark:bg-zinc-700">
+                              <div class="flex justify-end p-2">
+                                  <button type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-800 dark:hover:text-white" data-modal-toggle="success-modal">
+                                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                  </button>
+                              </div>
+                              <div class="p-6 pt-0 text-center">
+                                  <svg class="w-16 h-16 mx-auto text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Processing Complete!</h3>
+                                  <p id="success-message" class="text-zinc-600 dark:text-zinc-300 mb-6">Your file has been processed and the model has been trained successfully.</p>
+                                  
+                                  <!-- Model Training Results -->
+                                  <div id="training-results" class="mb-6 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-left">
+                                      <h4 class="text-lg font-semibold text-zinc-900 dark:text-white mb-3">Model Training Results:</h4>
+                                      <div class="grid grid-cols-2 gap-4">
+                                          <div class="p-3 bg-white dark:bg-zinc-700 rounded-lg shadow">
+                                              <p class="text-sm text-zinc-600 dark:text-zinc-300">Model Type</p>
+                                              <p id="model-type" class="text-lg font-semibold text-zinc-900 dark:text-white">-</p>
+                                          </div>
+                                          <div class="p-3 bg-white dark:bg-zinc-700 rounded-lg shadow">
+                                              <p class="text-sm text-zinc-600 dark:text-zinc-300">Test Accuracy</p>
+                                              <p id="test-accuracy" class="text-lg font-semibold text-zinc-900 dark:text-white">-</p>
+                                          </div>
+                                          <div class="p-3 bg-white dark:bg-zinc-700 rounded-lg shadow">
+                                              <p class="text-sm text-zinc-600 dark:text-zinc-300">F1 Score</p>
+                                              <p id="f1-score" class="text-lg font-semibold text-zinc-900 dark:text-white">-</p>
+                                          </div>
+                                          <div class="p-3 bg-white dark:bg-zinc-700 rounded-lg shadow">
+                                              <p class="text-sm text-zinc-600 dark:text-zinc-300">Dataset Size</p>
+                                              <p id="dataset-size" class="text-lg font-semibold text-zinc-900 dark:text-white">-</p>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <!-- PDF Text Display Area -->
+                                  <div id="extracted-text-container" class="hidden mb-6">
+                                      <h4 class="text-lg font-semibold text-zinc-900 dark:text-white mb-3">Extracted Text:</h4>
+                                      <div id="extracted-text-display" class="max-h-60 overflow-y-auto p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-left text-sm text-zinc-700 dark:text-zinc-300 border"></div>
+                                      <button id="copy-text-btn" class="mt-3 text-zinc-600 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm px-4 py-2 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white border border-zinc-300 dark:border-zinc-600">Copy Text</button>
+                                  </div>
+
+                                  <div class="flex justify-center">
+                                      <button id="view-predictions-btn" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">View Predictions</button>
+                                      <button id="close-success" class="ml-2 text-zinc-600 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm px-4 py-2 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white">Close</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Modal toggle -->
+                  <button class="block text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-full text-sm px-4 py-2 text-center dark:bg-zinc-700 dark:hover:bg-zinc-800 dark:focus:ring-zinc-800" type="button" data-modal-toggle="authentication-modal" data-modal-target="authentication-modal">
+                    Sign in
+                  </button>
+
+                  <!-- Main modal -->
+                  <div id="authentication-modal" aria-hidden="true" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 justify-center items-center">
+                      <div class="transition-all relative w-full max-w-md px-4 h-full md:h-auto">
+
+                          <!-- Modal content -->
+                          <div class="bg-zinc-50 rounded-lg shadow relative dark:bg-zinc-700">
+                              <div class="flex justify-end p-2">
+                                  <button type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-800 dark:hover:text-white" data-modal-toggle="authentication-modal">
+                                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                  </button>
+                              </div>
+                              <form class="space-y-6 px-6 lg:px-8 pb-4 sm:pb-6 xl:pb-8" action="#">
+                                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white">Sign In</h3>
+                                  <div>
+                                      <label for="email" class="text-sm font-medium text-zinc-900 block mb-2 dark:text-zinc-200">Email</label>
+                                      <input type="email" name="email" id="email" class="bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5 dark:bg-zinc-600 dark:border-zinc-500 dark:placeholder-zinc-300 dark:text-white" placeholder="name@gmail.com" required="">
+                                  </div>
+                                  <div>
+                                      <label for="password" class="text-sm font-medium text-zinc-900 block mb-2 dark:text-zinc-300">Password</label>
+                                      <input type="password" name="password" id="password" placeholder="•••••••••" class="bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5 dark:bg-zinc-600 dark:border-zinc-500 dark:placeholder-zinc-300 dark:text-white" required="">
+                                  </div>
+                                  <div class="flex justify-between">
+                                      <div class="flex items-start">
+                                          <div class="flex items-center h-5">
+                                              <input id="remember" aria-describedby="remember" type="checkbox" class="bg-zinc-50 border border-zinc-300 focus:ring-3 focus:ring-zinc-300 h-4 w-4 rounded dark:bg-zinc-500 dark:border-zinc-600 dark:focus:ring-zinc-600 dark:ring-offset-zinc-800" required="">
+                                          </div>
+                                          <div class="text-sm ml-3">
+                                          <label for="remember" class="font-medium text-zinc-900 dark:text-zinc-300">Remember me</label>
+                                          </div>
+                                      </div>
+                                      <a href="#" class="text-sm text-zinc-700 hover:underline dark:text-zinc-200">Forgot Password?</a>
+                                  </div>
+                                  <button type="submit" class="w-full text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-zinc-500 dark:hover:bg-zinc-600 dark:focus:ring-zinc-600">Login to your account</button>
+                                  <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+                                      Not registered? <a href="{% url 'create-account' %}" class="text-zinc-700 hover:underline dark:text-zinc-500">Create account</a>
+                                  </div>
+                              </form>
+
+
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Reset Model Button -->
+                  <!-- <button id="reset-model-btn" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">
+                      Reset Model Data
+                  </button> -->
+
+                <span class="relative flex size-3">
+                      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex size-3 rounded-full bg-red-500"></span>
+                </span>
+            </div>
+    </nav>
+</header>
+
+
+<div>
+{% block content %}
+
+{#    Search Bar on Homepage#}
+    <form id="search-form" class="max-w-md mx-auto">
+    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-black">Search</label>
+
+{#             This class represents the Welcome message on the Homepage.#}
+        <div id="typewriter" class="mx-auto flex items-center justify-center p-3 border-solid font-noto whitespace-nowrap text-2xl text-black dark:text-gray-50">
+            <!---->
+        </div>
+
+            <div class="relative">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    </svg>
+                </div>
+                <input type="search" id="default-search" class="block w-full p-4 ps-10 text-sm text-zinc-500 border border-zinc-300 rounded-full bg-zinc-100 focus:ring-zinc-500 focus:border-zinc-500 dark:bg-zinc-700 dark:border-zinc-600 placeholder-zinc-500 dark:placeholder-zinc-100 dark:text-white dark:focus:ring-zinc-500 dark:focus:border-zinc-500" placeholder="Enter your command..." required />
+                    <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-full text-sm px-4 py-2 dark:bg-zinc-500 dark:hover:bg-zinc-700 dark:focus:ring-zinc-500 hover:transition-all dark:hover:transition-all">Search</button>
+            </div>
+            
+
+            
+            <!-- Intelligent Analysis Examples -->
+            <!-- <div class="mt-8 max-w-4xl mx-auto">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4 text-center">Intelligent Analysis Examples</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="startConversation('What characteristics should I look for to find gold around Sarah Creek?')" class="p-4 text-left bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 rounded-lg hover:shadow-md transition-all group">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span class="font-medium text-purple-800 dark:text-purple-200">Location Analysis</span>
+                        </div>
+                        <div class="text-sm text-purple-600 dark:text-purple-400">Find gold characteristics in specific areas like Sarah Creek</div>
+                    </button>
+                    
+                    <button onclick="startConversation('What are the key areas to find gold in the hillside?')" class="p-4 text-left bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg hover:shadow-md transition-all group">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
+                            </svg>
+                            <span class="font-medium text-green-800 dark:text-green-200">Area Identification</span>
+                        </div>
+                        <div class="text-sm text-green-600 dark:text-green-400">Identify high-probability gold areas in hillsides</div>
+                    </button>
+                    
+                    <button onclick="startConversation('Which crest of hillsides have a high probability of gold occurrence?')" class="p-4 text-left bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg hover:shadow-md transition-all group">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <span class="font-medium text-yellow-800 dark:text-yellow-200">Probability Analysis</span>
+                        </div>
+                        <div class="text-sm text-yellow-600 dark:text-yellow-400">Assess gold probability in specific terrain features</div>
+                    </button>
+                    
+                    <button onclick="startConversation('What geological formations are most favorable for gold deposits in Guyana?')" class="p-4 text-left bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 rounded-lg hover:shadow-md transition-all group">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            <span class="font-medium text-red-800 dark:text-red-200">Formation Analysis</span>
+                        </div>
+                        <div class="text-sm text-red-600 dark:text-red-400">Identify gold-bearing geological formations</div>
+                    </button>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Click any example to start an intelligent analysis conversation
+                    </p>
+                </div>
+            </div> -->
+    </form>
+
+    <!-- ChatGPT-like Conversation Interface -->
+    <div id="conversation-container" class="fixed inset-0 bg-white dark:bg-zinc-900 z-50 transform translate-x-full transition-all duration-700 ease-out">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
+            <div class="flex items-center space-x-3">
+                <button id="back-to-home" class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <img src="/static/images/goldmine_ai_black_fonts.png" class="h-8 invert dark:invert-0" alt="Goldmine AI Logo"/>
+                    <span class="text-lg font-semibold text-zinc-900 dark:text-white">Goldmine AI</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+
+                <button id="new-chat" class="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                    New Chat
+                </button>
+            </div>
+        </div>
+
+        <!-- Intelligent Analysis System -->
+        <div class="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 px-6 py-3">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">System:</span>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            <span class="text-sm font-semibold text-blue-600 dark:text-blue-400">Intelligent Auto-Analysis</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                        <span id="current-mode-info">Automatically determines best approach based on your question</span>
+                        <div id="mode-indicator" class="inline-block ml-2 w-2 h-2 rounded-full bg-green-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messages-container" class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            <!-- Messages will be dynamically added here -->
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-6 py-4">
+            <div class="max-w-4xl mx-auto">
+                <form id="chat-form" class="flex items-end space-x-4">
+                    <div class="flex-1 relative">
+                        <textarea 
+                            id="chat-input" 
+                            rows="1" 
+                            class="w-full p-4 pr-12 text-sm text-zinc-900 dark:text-white bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:focus:ring-blue-400 shadow-sm"
+                            placeholder="Message Goldmine AI..."
+                            style="min-height: 44px; max-height: 200px;"
+                        ></textarea>
+                        <button 
+                            type="button" 
+                            id="send-button"
+                            class="absolute bottom-2 right-2 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                            disabled
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+                <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-3 text-center">
+                    Goldmine AI can make mistakes. Consider checking important information.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Advanced Search Panel -->
+
+
+    <!-- Gold Price Widget (Full version) -->
+    <div id="gold-price-widget" class="gold-price-widget max-w-sm mx-auto mt-10 p-0 transition-all">
+        <div class="gold-price-header flex items-center justify-between p-4">
+            <div class="flex items-center">
+                <img src="{% static 'img/gold-bar.svg' %}" alt="Gold" class="w-6 h-6 mr-2 gold-icon" />
+                <h3 class="text-lg font-bold text-zinc-900 dark:text-white">Gold Market Price</h3>
+            </div>
+            <button id="refresh-gold-price" class="gold-price-refresh p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-600 dark:text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-4 pt-2">
+            <div class="flex items-end mb-1">
+                <div id="gold-price-value" class="text-2xl text-zinc-900 dark:text-white">$0.00</div>
+                <div class="text-sm text-zinc-500 dark:text-zinc-400 ml-2">per gram</div>
+            </div>
+            <div id="gold-price-change" class="text-sm"></div>
+            <div id="gold-price-last-updated" class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                Last updated: --:--:--
+            </div>
+            <div id="data-source-indicator" class="text-xs text-amber-600 dark:text-amber-400 mt-1 font-medium">
+                Loading data source...
+            </div>
+        </div>
+    </div>
+
+
+    {% endblock %}
+</div>
+
+<footer class="bg-transparent dark:bg-transparent bottom-0">
+  <div class="mx-auto max-w-screen-2xl px-2 py-3 sm:px-6 lg:px-8">
+    <div class="flex justify-between">
+      <div class="text-sm text-zinc-700 dark:text-zinc-500 lg:mt-0 lg:text-right py-3">
+        &copy; 2025 Goldmine AI
+      </div>
+        <div class="text-sm text-zinc-700 dark:text-zinc-500 mx-auto">
+            By using Goldmine AI, you agree to our <a class="text-zinc-700 dark:text-zinc-400" href="/"><u><strong>Terms</strong></u></a> and have read our <a class="text-zinc-700 dark:text-zinc-400" href="/"><u><strong>Privacy Policy</strong></u></a>.
+      </div>
+        <div>
+            <button type="button" class="text-sm md:me-0 focus:ring-3 py-0 focus:ring-zinc-300 dark:focus:ring-zinc-600 rounded-full hover:opacity-100 transition-all" id="support-button" aria-expanded="false" data-popup="support popup">
+                <span class="sr-only">Open support chat</span>
+                <img class="w-8 h-8 rounded-lg invert dark:invert-0 opacity-80 hover:opacity-100" src="/static/images/support_white.png" alt="Support chat">
+            </button>
+        </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+<script src="{% static "js/app.js"%}?v=2"></script>
+<script src="{% static "js/modules/api.js"%}?v=2"></script>
+<script>
+    // Debug: Check if APIClient is loaded
+    console.log('APIClient loaded:', typeof APIClient);
+    console.log('Window APIClient:', window.APIClient);
+    if (typeof APIClient !== 'undefined') {
+        console.log('✅ APIClient class is available');
+    } else {
+        console.log('❌ APIClient class is NOT available');
+    }
+</script>
+<script src="{% static "js/modules/ui.js"%}?v=2"></script>
+<script src="{% static "js/typewriter.js"%}?v=2" defer></script>
+<script src="{% static "js/upload_handler.js"%}?v=2" defer></script>
+<script src="{% static "js/support_chat.js"%}?v=2" defer></script>
+{% block extra_js %}{% endblock %}
+
+<!-- Progress Bar Styling -->
+<style>
+.progress-bar {
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-container {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.process-btn:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.process-btn:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* ChatGPT-like Conversation Styles */
+#conversation-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+#messages-container {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.prose {
+    line-height: 1.6;
+}
+
+.prose p {
+    margin-bottom: 1em;
+}
+
+.prose p:last-child {
+    margin-bottom: 0;
+}
+
+/* Auto-resize textarea with dynamic expansion */
+#chat-input {
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    scroll-behavior: smooth;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    min-height: 44px;
+    max-height: none; /* Remove max-height restriction */
+    resize: none;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Content overflow indicator */
+#chat-input.content-overflow {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    background: linear-gradient(180deg, 
+        rgba(245, 158, 11, 0.05) 0%, 
+        rgba(245, 158, 11, 0.02) 50%, 
+        rgba(245, 158, 11, 0.05) 100%);
+}
+
+/* Expansion animation */
+#chat-input {
+    transform-origin: bottom center;
+    animation: expandTextarea 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes expandTextarea {
+    0% {
+        transform: scaleY(0.95);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+/* Smooth height transitions with better easing */
+#chat-input {
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease,
+                transform 0.2s ease;
+}
+
+/* Smooth height transitions */
+#chat-input {
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+#chat-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chat-input::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+#chat-input::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.8);
+}
+
+/* Dark mode scrollbar */
+.dark #chat-input::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.3);
+}
+
+.dark #chat-input::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.6);
+}
+
+/* Smooth scrolling animation for textarea */
+#chat-input {
+    scroll-behavior: smooth;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Enhanced focus state with scroll indicator */
+#chat-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Cursor position indicator */
+#chat-input.cursor-outside {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Enhanced message animations */
+@keyframes slideInFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#messages-container > div {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: left center;
+}
+
+/* Message hover effects */
+#messages-container > div:hover .flex-shrink-0 > div {
+    transform: scale(1.05);
+}
+
+/* Smooth opacity and transform transitions */
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+.translate-y-4 {
+    transform: translateY(1rem);
+}
+
+.translate-y-0 {
+    transform: translateY(0);
+}
+
+/* Smooth transitions with better easing */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition-duration: 700ms;
+}
+
+/* Enhanced button transitions */
+button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Performance optimizations */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typing cursor animation */
+.typing-cursor {
+    animation: blink 1s infinite;
+    color: #3b82f6;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+</style>
+
+<!-- Upload functionality is now handled by upload_handler.js -->
+
+<script>
+  const modal = document.getElementById('authentication-modal');
+  const modalOpenButton = document.querySelector('[data-modal-toggle="authentication-modal"]');
+  const modalCloseButton = document.querySelector('[data-modal-hide="authentication-modal"]');
+
+  // Only add event listeners if elements exist
+  if (modalOpenButton) {
+  modalOpenButton.addEventListener('click', () => {
+      if (modal) {
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modal.classList.add('opacity-100', 'translate-y-0');
+    }, 10);
+      }
+  });
+  } else {
+    console.warn('Authentication modal open button not found');
+  }
+
+  if (modalCloseButton) {
+  modalCloseButton.addEventListener('click', () => {
+      if (modal) {
+    modal.classList.remove('opacity-100', 'translate-y-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300); // This should match the transition duration
+      }
+  });
+  } else {
+    console.warn('Authentication modal close button not found');
+  }
+
+</script>
+
+<!--Menu Toggle for Navbar-->
+<script>
+
+    function onToggleMenu(e){
+        const navlinks = document.querySelector('.nav-links')
+        e.id = e.id === 'menu'// ? 'close': 'menu'
+        navlinks.classList.toggle('top-[8%]')
+    }
+</script>
+
+<!-- ChatGPT-like Conversation JavaScript -->
+<script>
+// Wait for both DOM and APIClient to be ready
+function initializeChat() {
+    // Check if APIClient is available
+    if (typeof APIClient === 'undefined') {
+        console.log('APIClient not ready yet, retrying in 100ms...');
+        setTimeout(initializeChat, 100);
+        return;
+    }
+    
+    console.log('APIClient is ready, initializing chat...');
+    
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('default-search');
+    const conversationContainer = document.getElementById('conversation-container');
+    const backToHomeBtn = document.getElementById('back-to-home');
+    const newChatBtn = document.getElementById('new-chat');
+    const messagesContainer = document.getElementById('messages-container');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    // Removed search panel elements - no longer needed
+    
+    let conversationHistory = [];
+    let isProcessing = false;
+    let uploadedFilesCount = 0;
+
+    // Only add event listeners if elements exist
+    if (searchForm && searchInput) {
+    // Handle search form submission
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+            startConversation(query);
+        }
+    });
+    } else {
+        console.warn('Search form or input not found');
+    }
+
+    if (chatForm && chatInput) {
+        // Handle chat form submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (message && !isProcessing) {
+                sendMessage(message);
+            }
+        });
+        
+        // Initialize textarea height
+        chatInput.style.height = '44px';
+        chatInput.classList.remove('content-overflow');
+    } else {
+        console.warn('Chat form or input not found');
+    }
+
+    if (sendButton && chatInput) {
+    // Handle send button click
+    sendButton.addEventListener('click', function() {
+        const message = chatInput.value.trim();
+        if (message && !isProcessing) {
+            sendMessage(message);
+        }
+    });
+
+    // Auto-resize textarea with dynamic expansion
+    chatInput.addEventListener('input', function() {
+        // Reset height to auto to get the natural height
+        this.style.height = 'auto';
+        
+        // Calculate the natural height needed for the content
+        const naturalHeight = this.scrollHeight;
+        
+        // Get current viewport height to determine max expansion
+        const viewportHeight = window.innerHeight;
+        const textareaTop = this.getBoundingClientRect().top;
+        const availableHeight = viewportHeight - textareaTop - 100; // 100px buffer for UI elements
+        
+        // Calculate optimal height (expand up to available viewport space)
+        const optimalHeight = Math.min(naturalHeight, availableHeight);
+        
+        // Set the height with smooth transition
+        this.style.height = Math.max(44, optimalHeight) + 'px'; // Minimum 44px height
+        
+        // Enable/disable send button
+        sendButton.disabled = !this.value.trim() || isProcessing;
+        
+        // If content is still overflowing, show a subtle indicator
+        if (naturalHeight > availableHeight) {
+            this.classList.add('content-overflow');
+        } else {
+            this.classList.remove('content-overflow');
+        }
+        
+        // Handle empty content - reset to minimum height
+        if (!this.value.trim()) {
+            this.style.height = '44px';
+            this.classList.remove('content-overflow');
+        }
+    });
+
+    // Auto-scroll textarea when cursor goes outside visible area
+    chatInput.addEventListener('keyup', function(e) {
+        // Skip for special keys that don't change cursor position
+        if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) {
+            return;
+        }
+        
+        // Get cursor position
+        const cursorPosition = this.selectionStart;
+        const textBeforeCursor = this.value.substring(0, cursorPosition);
+        
+        // Create a temporary element to measure text dimensions
+        const tempDiv = document.createElement('div');
+        tempDiv.style.cssText = `
+            position: absolute;
+            visibility: hidden;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: ${getComputedStyle(this).fontFamily};
+            font-size: ${getComputedStyle(this).fontSize};
+            line-height: ${getComputedStyle(this).lineHeight};
+            padding: ${getComputedStyle(this).padding};
+            border: ${getComputedStyle(this).border};
+            width: ${this.offsetWidth - 20}px;
+            max-height: none;
+            box-sizing: border-box;
+        `;
+        tempDiv.textContent = textBeforeCursor;
+        document.body.appendChild(tempDiv);
+        
+        // Calculate cursor position in pixels
+        const cursorHeight = tempDiv.offsetHeight;
+        document.body.removeChild(tempDiv);
+        
+        // Get current scroll position and visible height
+        const scrollTop = this.scrollTop;
+        const clientHeight = this.clientHeight;
+        
+        // Check if cursor is outside visible area (with some buffer)
+        const buffer = 20; // pixels of buffer
+        if (cursorHeight < scrollTop + buffer || cursorHeight > scrollTop + clientHeight - buffer) {
+            // Scroll to make cursor visible with smooth animation
+            const targetScrollTop = Math.max(0, cursorHeight - clientHeight / 2);
+            
+            // Use smooth scrolling if available
+            if ('scrollBehavior' in this.style) {
+                this.scrollTo({
+                    top: targetScrollTop,
+                    behavior: 'smooth'
+                });
+            } else {
+                this.scrollTop = targetScrollTop;
+            }
+        }
+    });
+
+    // Also handle arrow keys and other navigation
+    chatInput.addEventListener('keydown', function(e) {
+        // Handle arrow keys for better cursor tracking
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+            // Use setTimeout to ensure cursor position is updated before checking
+            setTimeout(() => {
+                this.dispatchEvent(new Event('keyup'));
+            }, 0);
+        }
+    });
+
+    // Also handle mouse clicks to ensure cursor visibility
+    chatInput.addEventListener('click', function() {
+        // Trigger the same logic on click
+        this.dispatchEvent(new Event('keyup'));
+    });
+
+    // Add visual feedback when scrolling
+    chatInput.addEventListener('scroll', function() {
+        // Add a subtle visual indicator that scrolling is happening
+        this.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.2)';
+        
+        // Remove the indicator after scrolling stops
+        clearTimeout(this.scrollTimeout);
+        this.scrollTimeout = setTimeout(() => {
+            this.style.boxShadow = '';
+        }, 300);
+    });
+
+    // Handle paste events to ensure cursor visibility after pasting
+    chatInput.addEventListener('paste', function() {
+        // Use setTimeout to ensure the paste operation completes
+        setTimeout(() => {
+            this.dispatchEvent(new Event('keyup'));
+        }, 10);
+    });
+
+    // Handle window resize to adjust textarea height
+    window.addEventListener('resize', function() {
+        if (chatInput && chatInput.value.trim()) {
+            // Recalculate height when window is resized
+            chatInput.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Handle Enter key in chat input
+    chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const message = this.value.trim();
+            if (message && !isProcessing) {
+                sendMessage(message);
+            }
+        } else if (e.key === 'Enter' && e.shiftKey) {
+            // Allow Shift+Enter for new lines
+            // The input event will handle the height adjustment
+        }
+    });
+    } else {
+        console.warn('Send button or chat input not found');
+    }
+
+    if (backToHomeBtn) {
+    // Handle back to home button
+    backToHomeBtn.addEventListener('click', function() {
+        slideOut();
+    });
+    } else {
+        console.warn('Back to home button not found');
+    }
+
+    if (newChatBtn) {
+    // Handle new chat button
+    newChatBtn.addEventListener('click', function() {
+        clearConversation();
+    });
+    } else {
+        console.warn('New chat button not found');
+    }
+
+    // Search panel functionality removed - no longer needed
+
+    // Advanced search form removed - no longer needed
+
+    // Start conversation with initial query
+    function startConversation(query) {
+        conversationHistory = [];
+        slideIn();
+        addUserMessage(query);
+        processAIResponse(query);
+    }
+
+    // Send message in ongoing conversation
+    function sendMessage(message) {
+        if (isProcessing) return;
+        
+        addUserMessage(message);
+        chatInput.value = '';
+        
+        // Reset textarea height to minimum size
+        chatInput.style.height = '44px';
+        chatInput.classList.remove('content-overflow');
+        
+        sendButton.disabled = true;
+        processAIResponse(message);
+    }
+
+    // Add user message to conversation
+    function addUserMessage(message) {
+        const messageDiv = createMessageElement('user', message);
+        messagesContainer.appendChild(messageDiv);
+        conversationHistory.push({ role: 'user', content: message });
+        scrollToBottom();
+    }
+
+    // Add AI message to conversation
+    function addAIMessage(message, isStreaming = false) {
+        const messageDiv = createMessageElement('ai', message, isStreaming);
+        messagesContainer.appendChild(messageDiv);
+        conversationHistory.push({ role: 'assistant', content: message });
+        
+        scrollToBottom();
+        return messageDiv;
+    }
+
+    // Create message element
+    function createMessageElement(role, content, isStreaming = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'flex space-x-4 opacity-0 transform translate-y-4';
+        
+        if (role === 'user') {
+            messageDiv.innerHTML = 
+                '<div class="flex-shrink-0">' +
+                    '<div class="w-8 h-8 rounded-full bg-zinc-600 flex items-center justify-center">' +
+                        '<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">' +
+                            '<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>' +
+                        '</svg>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex-1">' +
+                    '<div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-4 py-3">' +
+                        '<p class="text-zinc-900 dark:text-white whitespace-pre-wrap leading-relaxed">' + escapeHtml(content) + '</p>' +
+                    '</div>' +
+                '</div>';
+        } else {
+            messageDiv.innerHTML = 
+                '<div class="flex-shrink-0">' +
+                    '<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">' +
+                        '<img src="/static/images/goldmine_ai_black_fonts.png" class="w-5 h-5 invert" alt="AI"/>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex-1">' +
+                    '<div class="bg-white dark:bg-zinc-900 rounded-2xl px-4 py-3">' +
+                        '<div class="prose prose-sm max-w-none text-zinc-900 dark:text-white leading-relaxed">' +
+                            (isStreaming ? '<div class="typing-indicator">' + createTypingIndicator() + '</div>' : escapeHtml(content)) +
+                        '</div>' +
+                        '<div class="mt-3 flex items-center justify-between">' +
+                            '<div class="flex items-center space-x-2 text-xs text-zinc-500 dark:text-zinc-400">' +
+                                '<span class="message-timestamp">' + new Date().toLocaleTimeString() + '</span>' +
+                                '<span class="message-id" style="display: none;"></span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }
+        
+        // Animate the message in
+        setTimeout(() => {
+            messageDiv.classList.remove('opacity-0', 'translate-y-4');
+            messageDiv.classList.add('opacity-100', 'translate-y-0');
+        }, 50);
+        
+        return messageDiv;
+    }
+
+    // Create typing indicator
+    function createTypingIndicator() {
+        return `
+            <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        `;
+    }
+
+    // Intelligent Analysis System - No manual mode selection needed
+    console.log('Intelligent Analysis System initialized - automatically determines best approach');
+
+    // Process AI response using OpenAI API with intelligent analysis and query classification
+    async function processAIResponse(userMessage) {
+        isProcessing = true;
+        const startTime = Date.now();
+        
+        // Add typing indicator with better loading message
+        const aiMessageDiv = addAIMessage('', true);
+        const messageContent = aiMessageDiv.querySelector('.prose');
+        
+        // Show better loading message with progress
+        messageContent.innerHTML = `
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <span class="text-sm text-zinc-600 dark:text-zinc-400">Analyzing your question...</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                    <div class="bg-blue-600 h-1 rounded-full animate-pulse" style="width: 60%"></div>
+                </div>
+                <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Processing geological data and generating insights...
+                </div>
+            </div>
+        `;
+        
+        try {
+            // Check if this is a simple query that can be answered quickly
+            const simpleQueries = [
+                'hello', 'hi', 'help', 'what can you do', 'how does this work',
+                'thanks', 'thank you', 'bye', 'goodbye'
+            ];
+            
+            const isSimpleQuery = simpleQueries.some(query => 
+                userMessage.toLowerCase().includes(query)
+            );
+            
+            // Use the new API client for chat
+            console.log('APIClient available:', typeof APIClient);
+            console.log('Window APIClient:', window.APIClient);
+            
+            if (typeof APIClient === 'undefined') {
+                throw new Error('APIClient class is not available. Please refresh the page.');
+            }
+            
+            const apiClient = new APIClient();
+            console.log('API Client created successfully:', apiClient);
+            console.log('Sending request with intelligent analysis system');
+            
+            const data = await apiClient.sendChatMessage(
+                userMessage, 
+                conversationHistory
+            );
+            
+            console.log('Response data:', data);
+            
+            if (data.success) {
+                // Check if this is an intelligent analysis response
+                if (data.sources && data.sources.length > 0) {
+                    // This is an intelligent analysis response
+                    console.log('Intelligent Analysis Response:', data);
+                    
+                    // Display the intelligent response with sources
+                    await displayIntelligentResponse(data, messageContent);
+                } else {
+                    // This is a regular chat response
+                    console.log('Regular Chat Response:', data);
+                    await streamResponse(data.response, messageContent);
+                }
+                
+                // Store message ID for feedback
+                if (data.message_id) {
+                    const messageIdSpan = aiMessageDiv.querySelector('.message-id');
+                    if (messageIdSpan) {
+                        messageIdSpan.textContent = data.message_id;
+                    }
+                }
+                
+                // Log usage info (hidden from user)
+                const responseTime = Date.now() - startTime;
+                if (data.usage) {
+                    console.log('Analysis Usage:', data.usage);
+                }
+                console.log(`Response time: ${responseTime}ms`);
+            } else {
+                // Handle error
+                messageContent.innerHTML = '<div class="text-red-600">Error: ' + data.error + '</div>';
+                console.error('API Error:', data.error);
+            }
+        } catch (error) {
+            // Handle network or other errors
+                            messageContent.innerHTML = '<div class="text-red-600">Network error: ' + error.message + '</div>';
+            console.error('Network Error:', error);
+        }
+        
+        isProcessing = false;
+        sendButton.disabled = !chatInput.value.trim();
+    }
+    
+    // Display intelligent analysis response with sources and geological insights
+    async function displayIntelligentResponse(data, messageContent) {
+        try {
+            // Create the main response content
+            let responseHTML = `
+                <div class="space-y-4">
+                    <!-- Main Response -->
+                    <div class="prose prose-sm max-w-none">
+                        ${data.response.replace(/\n/g, '<br>')}
+                    </div>
+                    
+                    <!-- Sources Section -->
+                    <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h4 class="text-blue-800 dark:text-blue-200 font-semibold text-sm">Sources & Analysis</h4>
+                        </div>
+                        
+                        <!-- Source Documents -->
+                        <div class="space-y-2">
+                            <p class="text-xs text-blue-700 dark:text-blue-300 mb-2">
+                                This response is based on analysis of ${data.sources.length} geological document${data.sources.length > 1 ? 's' : ''}:
+                            </p>
+            `;
+            
+            // Add each source document
+            data.sources.forEach((source, index) => {
+                const sourceName = source.original_filename || source.filename || 'Unknown Document';
+                const hasCoords = source.has_coordinates ? '📍' : '';
+                const hasMinerals = source.has_mineral_data ? '💎' : '';
+                
+                responseHTML += `
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="text-blue-600 font-medium">${index + 1}.</span>
+                        <span class="text-blue-700 dark:text-blue-300">${sourceName}</span>
+                        <span class="text-blue-500">${hasCoords}${hasMinerals}</span>
+                    </div>
+                `;
+            });
+            
+            // Add query type information
+            if (data.query_type && data.query_type !== 'general') {
+                responseHTML += `
+                    <div class="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+                        <span class="text-xs text-blue-600 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded-full">
+                            ${data.query_type.charAt(0).toUpperCase() + data.query_type.slice(1)} Analysis
+                        </span>
+                    </div>
+                `;
+            }
+            
+            responseHTML += `
+                        </div>
+                    </div>
+                    
+                    <!-- Intelligent Analysis Badge -->
+                    <div class="flex items-center justify-center">
+                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            AI-Powered Geological Analysis
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Display the response
+            messageContent.innerHTML = responseHTML;
+            
+        } catch (error) {
+            console.error('Error displaying intelligent response:', error);
+            messageContent.innerHTML = '<div class="text-red-600">Error displaying intelligent response</div>';
+        }
+    }
+
+    // Note: Intelligent analysis results are now displayed with full geological insights
+
+    // Add deep analysis results to the message
+    function addDeepAnalysisResults(data, messageContent) {
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800';
+        
+        let resultsHTML = `
+            <div class="flex items-center mb-3">
+                <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <h4 class="text-purple-800 dark:text-purple-200 font-semibold">Deep AI Analysis Results</h4>
+            </div>
+        `;
+        
+        // Add query type
+        if (data.query_type) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Query Type:</span>
+                    <span class="text-sm text-purple-600 dark:text-purple-400 ml-2 capitalize">${data.query_type.replace('_', ' ')}</span>
+                </div>
+            `;
+        }
+        
+        // Add confidence score
+        if (data.confidence) {
+            const confidencePercent = (data.confidence * 100).toFixed(1);
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Confidence:</span>
+                    <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${confidencePercent}%</span>
+                </div>
+            `;
+        }
+        
+        // Add data quality score
+        if (data.data_quality_score) {
+            const qualityPercent = (data.data_quality_score * 100).toFixed(1);
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Data Quality:</span>
+                    <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${qualityPercent}%</span>
+                </div>
+            `;
+        }
+        
+        // Add predictions
+        if (data.predictions && data.predictions.length > 0) {
+            resultsHTML += `
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">AI Predictions:</h5>
+                    <ul class="text-sm text-purple-600 dark:text-purple-400 space-y-1">
+                        ${data.predictions.slice(0, 3).map(prediction => `<li>• ${prediction}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Add risk factors
+        if (data.risk_factors && data.risk_factors.length > 0) {
+            resultsHTML += `
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Risk Factors:</h5>
+                    <ul class="text-sm text-purple-600 dark:text-purple-400 space-y-1">
+                        ${data.risk_factors.slice(0, 3).map(risk => `<li>• ${risk}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Add opportunities
+        if (data.opportunities && data.opportunities.length > 0) {
+            resultsHTML += `
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Opportunities:</h5>
+                    <ul class="text-sm text-purple-600 dark:text-purple-400 space-y-1">
+                        ${data.opportunities.slice(0, 3).map(opportunity => `<li>• ${opportunity}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Add recommendations
+        if (data.recommendations && data.recommendations.length > 0) {
+            resultsHTML += `
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Strategic Recommendations:</h5>
+                    <ul class="text-sm text-purple-600 dark:text-purple-400 space-y-1">
+                        ${data.recommendations.slice(0, 3).map(rec => `<li>• ${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // Add geological insights
+        if (data.geological_insights) {
+            resultsHTML += `
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-purple-700 dark:text-purple-300 mb-2">Advanced Geological Insights:</h5>
+                    <div class="text-sm text-purple-600 dark:text-purple-400">
+                        ${data.geological_insights.substring(0, 300)}${data.geological_insights.length > 300 ? '...' : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Add data sources
+        if (data.data_sources) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Data Points Analyzed:</span>
+                    <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${data.data_sources}</span>
+                </div>
+            `;
+        }
+        
+        // Add analysis method and depth
+        if (data.usage) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Analysis Method:</span>
+                    <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${data.usage.analysis_method || 'Deep AI Analysis'}</span>
+                </div>
+            `;
+            
+            if (data.usage.analysis_depth) {
+                resultsHTML += `
+                    <div class="mb-2">
+                        <span class="text-sm font-medium text-purple-700 dark:text-purple-300">Analysis Depth:</span>
+                        <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${data.usage.analysis_depth}</span>
+                    </div>
+                `;
+            }
+            
+            if (data.usage.models_used && data.usage.models_used.length > 0) {
+                resultsHTML += `
+                    <div class="mb-2">
+                        <span class="text-sm font-medium text-purple-700 dark:text-purple-300">AI Models Used:</span>
+                        <span class="text-sm text-purple-600 dark:text-purple-400 ml-2">${data.usage.models_used.join(', ')}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        // Add analysis method
+        resultsHTML += `
+            <div class="text-xs text-purple-500 dark:text-purple-400 mt-2">
+                Analysis method: Deep AI Analysis with advanced pattern recognition and predictive modeling
+            </div>
+        `;
+        
+        resultsDiv.innerHTML = resultsHTML;
+        messageContent.appendChild(resultsDiv);
+    }
+
+    // Add coordinate search results to the message
+    function addCoordinateSearchResults(data, messageContent) {
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800';
+        
+        let resultsHTML = `
+            <div class="flex items-center mb-3">
+                <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                </svg>
+                <h4 class="text-green-800 dark:text-green-200 font-semibold">Location Search Results</h4>
+            </div>
+        `;
+        
+        // Add query type
+        if (data.query_type) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-green-700 dark:text-green-300">Query Type:</span>
+                    <span class="text-sm text-green-600 dark:text-green-400 ml-2 capitalize">${data.query_type.replace('_', ' ')}</span>
+                </div>
+            `;
+        }
+        
+        // Add confidence score
+        if (data.confidence) {
+            const confidencePercent = (data.confidence * 100).toFixed(1);
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-green-700 dark:text-green-300">Confidence:</span>
+                    <span class="text-sm text-green-600 dark:text-green-400 ml-2">${confidencePercent}%</span>
+                </div>
+            `;
+        }
+        
+        // Add location data if available
+        if (data.location_data) {
+            const locationData = data.location_data;
+            
+            // Add coordinates found
+            if (locationData.coordinates_found && locationData.coordinates_found.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Coordinates Found:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${locationData.coordinates_found.map(coord => `<div>• ${coord}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add geological features
+            if (locationData.geological_features && locationData.geological_features.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Geological Features:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${locationData.geological_features.slice(0, 3).map(feature => 
+                                `<div>• ${feature.name} (${feature.feature_type})</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add mineral deposits
+            if (locationData.mineral_deposits && locationData.mineral_deposits.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Mineral Deposits:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${locationData.mineral_deposits.slice(0, 3).map(deposit => 
+                                `<div>• ${deposit.name} (${deposit.mineral_type})</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add documents found
+            if (locationData.documents_containing_location && locationData.documents_containing_location.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Documents Found:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${locationData.documents_containing_location.slice(0, 3).map(doc => 
+                                `<div>• ${doc.name} (${doc.source})</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Add coordinate data if available
+        if (data.coordinate_data) {
+            const coordinateData = data.coordinate_data;
+            
+            // Add geological features near coordinates
+            if (coordinateData.geological_features && coordinateData.geological_features.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Nearby Geological Features:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${coordinateData.geological_features.slice(0, 3).map(feature => 
+                                `<div>• ${feature.name} (${feature.distance ? feature.distance.toFixed(3) + '° away' : 'nearby'})</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add mineral deposits near coordinates
+            if (coordinateData.mineral_deposits && coordinateData.mineral_deposits.length > 0) {
+                resultsHTML += `
+                    <div class="mb-3">
+                        <h5 class="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Nearby Mineral Deposits:</h5>
+                        <div class="text-sm text-green-600 dark:text-green-400 space-y-1">
+                            ${coordinateData.mineral_deposits.slice(0, 3).map(deposit => 
+                                `<div>• ${deposit.name} (${deposit.mineral_type}) ${deposit.distance ? deposit.distance.toFixed(3) + '° away' : 'nearby'}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Add extracted locations/coordinates
+        if (data.extracted_locations && data.extracted_locations.length > 0) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-green-700 dark:text-green-300">Locations Searched:</span>
+                    <span class="text-sm text-green-600 dark:text-green-400 ml-2">${data.extracted_locations.join(', ')}</span>
+                </div>
+            `;
+        }
+        
+        if (data.extracted_coordinates && data.extracted_coordinates.length > 0) {
+            resultsHTML += `
+                <div class="mb-2">
+                    <span class="text-sm font-medium text-green-700 dark:text-green-300">Coordinates Searched:</span>
+                    <span class="text-sm text-green-600 dark:text-green-400 ml-2">${data.extracted_coordinates.join(', ')}</span>
+                </div>
+            `;
+        }
+        
+        // Add analysis method
+        if (data.usage && data.usage.analysis_method) {
+            resultsHTML += `
+                <div class="text-xs text-green-500 dark:text-green-400 mt-2">
+                    Analysis method: ${data.usage.analysis_method}
+                </div>
+            `;
+        }
+        
+        resultsDiv.innerHTML = resultsHTML;
+        messageContent.appendChild(resultsDiv);
+    }
+
+    // Stream response with smooth, natural typing
+    async function streamResponse(response, messageContent) {
+        messageContent.innerHTML = '';
+        let currentText = '';
+        
+        // Format the response for better readability
+        const formattedResponse = formatResponse(response);
+        
+        // Add a small delay before starting to stream
+        await new Promise(resolve => setTimeout(resolve, 150));
+        
+        // Split into characters for smoother typing effect
+        const characters = formattedResponse.split('');
+        
+        for (let i = 0; i < characters.length; i++) {
+            currentText += characters[i];
+            
+            // Add blinking cursor effect during typing
+            const cursorText = currentText + '<span class="typing-cursor">|</span>';
+            messageContent.innerHTML = formatMessageContent(cursorText);
+            
+            // Smooth, natural timing with variable speeds
+            let delay = 15; // Base delay
+            
+            // Faster typing for common characters
+            if (/[a-zA-Z0-9]/.test(characters[i])) {
+                delay = 8 + Math.random() * 8; // 8-16ms for letters/numbers
+            }
+            // Slightly longer for spaces
+            else if (characters[i] === ' ') {
+                delay = 5 + Math.random() * 5; // 5-10ms for spaces
+            }
+            // Longer pauses for punctuation
+            else if (/[.!?]/.test(characters[i])) {
+                delay = 80 + Math.random() * 40; // 80-120ms for sentence endings
+            }
+            // Medium pause for commas and other punctuation
+            else if (/[,;:]/.test(characters[i])) {
+                delay = 30 + Math.random() * 20; // 30-50ms for commas
+            }
+            // Slightly longer for line breaks
+            else if (characters[i] === '\n') {
+                delay = 20 + Math.random() * 10; // 20-30ms for line breaks
+            }
+            
+            // Add occasional longer pauses for natural rhythm
+            if (i > 0 && i % 50 === 0) {
+                delay += 50 + Math.random() * 30; // Extra pause every ~50 characters
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            // Smooth scroll to bottom every few characters
+            if (i % 10 === 0) {
+                scrollToBottom();
+            }
+        }
+        
+        // Remove cursor and show final text
+        messageContent.innerHTML = formatMessageContent(currentText);
+        
+        // Final scroll to bottom
+        scrollToBottom();
+        
+        // Update conversation history with final response
+        conversationHistory[conversationHistory.length - 1].content = response;
+    }
+    
+    // Format response for better readability
+    function formatResponse(response) {
+        // Add line breaks for better formatting
+        return response
+            .replace(/\n\n/g, '\n\n') // Preserve double line breaks
+            .replace(/\n/g, '\n') // Preserve single line breaks
+            .replace(/([.!?])\s+/g, '$1\n') // Add line breaks after sentences
+            .replace(/\n{3,}/g, '\n\n'); // Limit consecutive line breaks
+    }
+    
+    // Format message content with proper HTML formatting
+    function formatMessageContent(text) {
+        return text
+            .replace(/\n/g, '<br>') // Convert line breaks to HTML
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+            .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
+            .replace(/`(.*?)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm">$1</code>') // Code
+            .replace(/^# (.*$)/gm, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>') // H3 headers
+            .replace(/^## (.*$)/gm, '<h4 class="text-md font-semibold mt-3 mb-1">$1</h4>') // H4 headers
+            .replace(/^### (.*$)/gm, '<h5 class="text-sm font-semibold mt-2 mb-1">$1</h5>') // H5 headers
+            .replace(/^- (.*$)/gm, '<li class="ml-4">• $1</li>') // Bullet points
+            .replace(/^(\d+)\. (.*$)/gm, '<li class="ml-4">$1. $2</li>'); // Numbered lists
+    }
+
+    // Generate AI response using OpenAI API (fallback function - not used anymore)
+    function generateAIResponse(userMessage) {
+        return `I'm sorry, but I'm currently using the OpenAI API for responses. Please ensure your OpenAI API key is configured in the environment variables.`;
+    }
+
+    // Slide in conversation interface
+    function slideIn() {
+        // Add a small delay for smoother transition
+        setTimeout(() => {
+            conversationContainer.classList.remove('translate-x-full');
+            conversationContainer.classList.add('translate-x-0');
+            document.body.style.overflow = 'hidden';
+        }, 50);
+    }
+
+    // Slide out conversation interface
+    function slideOut() {
+        conversationContainer.classList.remove('translate-x-0');
+        conversationContainer.classList.add('translate-x-full');
+        
+        // Wait for transition to complete before restoring scroll
+        setTimeout(() => {
+            document.body.style.overflow = 'auto';
+        }, 700);
+    }
+
+    // Search panel functions removed - no longer needed
+
+    // Clear conversation
+    function clearConversation() {
+        messagesContainer.innerHTML = '';
+        conversationHistory = [];
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        sendButton.disabled = true;
+    }
+
+    // Scroll to bottom of messages with smooth animation
+    function scrollToBottom() {
+        if (messagesContainer) {
+            messagesContainer.scrollTo({
+                top: messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // Get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // File context indicator removed - no longer needed
+
+    // Add document context to chat message
+    function addDocumentContext(uploadedFiles, messageContent) {
+        const contextDiv = document.createElement('div');
+        contextDiv.className = 'mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg';
+        
+        let contextHtml = `
+            <div class="flex items-center space-x-2 mb-2">
+                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-sm font-medium text-blue-800 dark:text-blue-200">Documents Referenced (${uploadedFiles.length})</span>
+            </div>
+            <div class="space-y-2">
+        `;
+        
+        uploadedFiles.forEach((file, index) => {
+            contextHtml += `
+                <div class="text-xs text-blue-700 dark:text-blue-300">
+                    <span class="font-medium">${index + 1}.</span> ${file.name}
+                    <span class="text-blue-500 dark:text-blue-400 ml-2">(${file.uploaded})</span>
+                </div>
+            `;
+        });
+        
+        contextHtml += '</div>';
+        contextDiv.innerHTML = contextHtml;
+        messageContent.appendChild(contextDiv);
+    }
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Escape key to close chat
+        if (e.key === 'Escape') {
+            if (!conversationContainer.classList.contains('translate-x-full')) {
+                slideOut();
+            }
+        }
+    });
+    
+    // Initialization complete
+}
+
+// Start the chat initialization when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChat();
+});
+</script>
+
+<!-- Support Chat Modal -->
+<div id="footer-modal" aria-hidden="true" class="hidden fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
+    <div class="relative w-full max-w-md md:max-w-lg">
+        <div class="bg-white rounded-lg shadow dark:bg-zinc-800 relative">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-zinc-700">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-600 flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                        </svg>
+                    </div>
+                    GoldMine AI Support
+                </h3>
+                <button id="support-close" type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-700 dark:hover:text-white transition-all">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5">
+                <div id="chat-messages" class="overflow-y-auto max-h-80 mb-4 p-3 bg-zinc-50 dark:bg-zinc-900 rounded-lg shadow-inner">
+                    <div class="chat-message bot mb-3">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-600 flex items-center justify-center mr-2">
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-2 py-2 px-3 bg-blue-100 dark:bg-blue-600 rounded-lg rounded-tl-none">
+                                <p class="text-gray-800 dark:text-gray-200">Hello! I'm GoldMine AI's support assistant. How can I help you today?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="chat-form" class="flex">
+                    <div class="flex-1 relative">
+                        <input type="text" id="user-input" class="w-full p-2 pr-20 border border-zinc-300 dark:border-zinc-600 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white transition-all" placeholder="Ask about geological data, mining, or general questions...">
+                        
+                        <!-- Intelligent Analysis Indicator -->
+                        <div id="analysis-indicator" class="absolute right-2 top-1/2 transform -translate-y-1/2 hidden">
+                            <div class="flex items-center space-x-1 px-2 py-1 bg-green-100 dark:bg-green-800 rounded-full">
+                                <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-xs text-green-600 dark:text-green-400 font-medium">AI Analysis</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform hover:scale-105 active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this modal for confirmation -->
+<div id="reset-confirm-modal" aria-hidden="true" class="hidden overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 justify-center items-center">
+    <div class="relative w-full max-w-md px-4 h-full md:h-auto">
+        <div class="bg-zinc-50 rounded-lg shadow relative dark:bg-zinc-700">
+            <div class="flex justify-end p-2">
+                <button type="button" class="text-zinc-400 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-zinc-800 dark:hover:text-white" data-modal-toggle="reset-confirm-modal">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 pt-0 text-center">
+                <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Reset Model Data?</h3>
+                <p class="text-zinc-600 dark:text-zinc-300 mb-6">This will delete all model data, training history, and predictions. This action cannot be undone.</p>
+                <div class="flex justify-center">
+                    <button id="confirm-reset" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800">Yes, Reset Everything</button>
+                    <button id="cancel-reset" class="ml-2 text-zinc-600 bg-transparent hover:bg-zinc-200 hover:text-zinc-900 rounded-lg text-sm px-4 py-2 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme toggle script -->
+<script>
+    // Theme toggle functionality - run immediately and also on DOMContentLoaded
+    function initializeThemeToggle() {
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        if (themeToggleDarkIcon && themeToggleLightIcon && themeToggleBtn) {
+            // Get the icons from the new button after cloning
+            const newBtn = themeToggleBtn.cloneNode(true);
+            const newDarkIcon = newBtn.querySelector('#theme-toggle-dark-icon');
+            const newLightIcon = newBtn.querySelector('#theme-toggle-light-icon');
+            
+            // Replace the button
+            themeToggleBtn.parentNode.replaceChild(newBtn, themeToggleBtn);
+            
+            // Change the icons inside the new button based on previous settings
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                newLightIcon.classList.remove('hidden');
+            } else {
+                newDarkIcon.classList.remove('hidden');
+            }
+
+            newBtn.addEventListener('click', function() {
+                // Toggle icons in the new button
+                newDarkIcon.classList.toggle('hidden');
+                newLightIcon.classList.toggle('hidden');
+
+                // If is set in localStorage
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
+                } else {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                }
+            });
+        }
+    }
+
+    // Try to initialize immediately
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeThemeToggle);
+    } else {
+        initializeThemeToggle();
+    }
+</script>
+
+</html>

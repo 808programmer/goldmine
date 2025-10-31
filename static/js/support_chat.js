@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('user-input');
     const chatMessages = document.getElementById('chat-messages');
     const footerModal = document.getElementById('footer-modal');
-    const supportButton = document.querySelector('[data-modal-target="footer-modal"]');
-    const closeModalButton = document.querySelector('[data-modal-hide="footer-modal"]');
+    const supportButton = document.getElementById('support-button');
+    const closeModalButton = document.getElementById('support-close');
 
     // Add pulse effect to support button
     if (supportButton) {
@@ -399,10 +399,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force a reflow to ensure the CSS transition works properly
         void footerModal.offsetWidth;
         
-        // Make sure the modal is properly positioned
-        footerModal.style.position = 'fixed';
-        footerModal.style.bottom = window.innerWidth < 768 ? '16px' : '32px';  
+        // Position bottom-right (viewport anchored)
         footerModal.style.right = window.innerWidth < 768 ? '16px' : '32px';
+        footerModal.style.bottom = window.innerWidth < 768 ? '16px' : '32px';
         
         // Add show class for the animation
         footerModal.classList.add('show');
@@ -420,10 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300 + (index * 100));
         });
         
-        // Focus on input field after animation completes
-        setTimeout(() => {
-            userInput.focus();
-        }, 400);
+        // Do not auto-focus the input; keep page interaction uninterrupted
     }
 
     // Close chat
@@ -448,17 +444,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle window resize
     function handleResize() {
         if (footerModal && footerModal.classList.contains('show')) {
-            footerModal.style.bottom = window.innerWidth < 768 ? '16px' : '32px';
             footerModal.style.right = window.innerWidth < 768 ? '16px' : '32px';
-            
-            // Adjust height if needed
+            footerModal.style.bottom = window.innerWidth < 768 ? '16px' : '32px';
             const maxHeight = window.innerHeight * 0.8;
             const modalContent = footerModal.querySelector('.bg-white, .dark\\:bg-zinc-800');
-            if (modalContent) {
-                modalContent.style.maxHeight = `${maxHeight}px`;
-            }
+            if (modalContent) modalContent.style.maxHeight = `${maxHeight}px`;
         }
     }
+
+
 
     // Initialize the chat
     initChat();

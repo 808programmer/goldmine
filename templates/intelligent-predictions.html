@@ -118,6 +118,68 @@
         </div>
     </div>
 
+    <!-- Intelligent Coordinate Generation from Source Data -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🧠 Intelligent Coordinate Generation from Source Data</h2>
+        <p class="text-gray-600 mb-6">This system analyzes your geological source documents to place predictions in realistic locations rather than randomly.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Query</label>
+                <input type="text" id="intelligentQuery" value="gold exploration in Aranka Goldfield" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Coordinates</label>
+                <input type="number" id="numCoordinates" value="5" min="1" max="20"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+        
+        <button onclick="generateIntelligentCoordinatesFromSource()" 
+                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+            Generate Intelligent Coordinates
+        </button>
+        
+        <div id="intelligentResults" class="mt-4 hidden">
+            <h4 class="text-md font-semibold text-gray-800 mb-2">Generated Coordinates:</h4>
+            <div id="intelligentCoordinatesList" class="bg-gray-50 rounded-md p-4 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Enhanced AI Geological Predictions -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🤖 Enhanced AI Geological Predictions</h2>
+        <p class="text-gray-600 mb-6">Generate comprehensive geological predictions using the enhanced AI system with source data analysis.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Prediction Density</label>
+                <select id="predictionDensity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="low">Low (5 predictions)</option>
+                    <option value="medium" selected>Medium (15 predictions)</option>
+                    <option value="high">High (30 predictions)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Focus Areas (optional)</label>
+                <input type="text" id="focusAreas" placeholder="aranka, cuyuni, potaro" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-xs text-gray-500 mt-1">Comma-separated areas to focus on</p>
+            </div>
+        </div>
+        
+        <button onclick="generateEnhancedPredictions()" 
+                class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-md transition duration-200">
+            🚀 Generate AI Geological Predictions
+        </button>
+        
+        <div id="enhancedResults" class="mt-4 hidden">
+            <h4 class="text-md font-semibold text-gray-800 mb-2">Generated Predictions:</h4>
+            <div id="enhancedPredictionsList" class="bg-gray-50 rounded-md p-4 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
     <!-- Pattern Analysis -->
     <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">🧠 Learned Patterns</h2>
@@ -380,6 +442,88 @@ function generateIntelligentTrends() {
         
         // Reload status
         loadStatus();
+    });
+}
+
+function generateIntelligentCoordinatesFromSource() {
+    const query = document.getElementById('intelligentQuery').value;
+    const numCoordinates = document.getElementById('numCoordinates').value;
+    const resultsDiv = document.getElementById('intelligentResults');
+    const resultsList = document.getElementById('intelligentCoordinatesList');
+
+    resultsDiv.classList.remove('hidden');
+    resultsList.innerHTML = '<p class="text-gray-500">Generating coordinates...</p>';
+
+    fetch('/api/generate-intelligent-coordinates-from-source/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ query: query, num_coordinates: parseInt(numCoordinates) })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultsList.innerHTML = ''; // Clear previous results
+            data.coordinates.forEach(coord => {
+                const coordElement = document.createElement('div');
+                coordElement.className = 'bg-gray-100 p-2 rounded-md text-sm text-gray-800';
+                coordElement.textContent = `(${coord.latitude.toFixed(3)}, ${coord.longitude.toFixed(3)})`;
+                resultsList.appendChild(coordElement);
+            });
+        } else {
+            resultsList.innerHTML = `<div class="text-red-600 font-semibold">❌ ${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error generating coordinates from source:', error);
+        resultsList.innerHTML = `<div class="text-red-600 font-semibold">❌ Error generating coordinates from source</div>`;
+    });
+}
+
+function generateEnhancedPredictions() {
+    const density = document.getElementById('predictionDensity').value;
+    const focusAreas = document.getElementById('focusAreas').value;
+    const resultsDiv = document.getElementById('enhancedResults');
+    const resultsList = document.getElementById('enhancedPredictionsList');
+
+    resultsDiv.classList.remove('hidden');
+    resultsList.innerHTML = '<p class="text-gray-500">Generating predictions...</p>';
+
+    fetch('/api/generate-enhanced-predictions/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            prediction_density: density,
+            focus_areas: focusAreas.split(',').map(area => area.trim())
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultsList.innerHTML = ''; // Clear previous results
+            data.predictions.forEach(pred => {
+                const predElement = document.createElement('div');
+                predElement.className = 'bg-gray-100 p-2 rounded-md text-sm text-gray-800';
+                predElement.textContent = `
+                    ${pred.type}: ${pred.name}
+                    <br>Confidence: ${(pred.confidence * 100).toFixed(1)}%
+                    <br>Gold Probability: ${(pred.gold_probability * 100).toFixed(1)}%
+                    <br>Location: (${pred.latitude.toFixed(3)}, ${pred.longitude.toFixed(3)})
+                `;
+                resultsList.appendChild(predElement);
+            });
+        } else {
+            resultsList.innerHTML = `<div class="text-red-600 font-semibold">❌ ${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error generating enhanced predictions:', error);
+        resultsList.innerHTML = `<div class="text-red-600 font-semibold">❌ Error generating enhanced predictions</div>`;
     });
 }
 

@@ -601,3 +601,101 @@ class UserInteraction(models.Model):
     def __str__(self):
         return f"{self.interaction_type} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
 
+
+class ModelVersion(models.Model):
+    """
+    Model to track trained model versions
+    """
+    id = models.AutoField(primary_key=True)
+    version_number = models.CharField(max_length=50, unique=True)
+    model_path = models.CharField(max_length=500)  # Path to saved model file
+    trained_at = models.DateTimeField(auto_now_add=True)
+    trained_by = models.CharField(max_length=100, blank=True, default='system')
+    
+    # Training metrics
+    accuracy = models.FloatField(null=True, blank=True)
+    f1_score = models.FloatField(null=True, blank=True)
+    training_samples = models.IntegerField(default=0)
+    validation_samples = models.IntegerField(default=0)
+    
+    # Data quality metrics
+    data_quality_score = models.FloatField(null=True, blank=True)
+    documents_used = models.IntegerField(default=0)
+    coordinates_generated = models.IntegerField(default=0)
+    
+    # Model metadata
+    model_type = models.CharField(max_length=50, default='RandomForest')
+    hyperparameters = models.JSONField(null=True, blank=True)
+    training_config = models.JSONField(null=True, blank=True)
+    
+    # Status tracking
+    is_active = models.BooleanField(default=False)
+    is_production = models.BooleanField(default=False)
+    deployment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('training', 'Training'),
+            ('validated', 'Validated'),
+            ('deployed', 'Deployed'),
+            ('archived', 'Archived'),
+            ('failed', 'Failed')
+        ],
+        default='training'
+    )
+    
+    # Notes and description
+    description = models.TextField(blank=True, default="")
+    notes = models.TextField(blank=True, default="")
+    
+    # Performance tracking
+    predictions_count = models.IntegerField(default=0)
+    avg_prediction_time = models.FloatField(null=True, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['version_number']),
+            models.Index(fields=['trained_at']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['is_production']),
+        ]
+        ordering = ['-trained_at']
+    
+    def __str__(self):
+        return f"Model v{self.version_number} ({self.trained_at.strftime('%Y-%m-%d')})"
+    
+    def get_model_file_path(self):
+        """Get full path to model file"""
+        import os
+        from pathlib import Path
+        from django.conf import settings
+        
+        if os.path.isabs(self.model_path):
+            return Path(self.model_path)
+        return Path(settings.BASE_DIR) / self.model_path
+    
+    def model_file_exists(self):
+        """Check if model file exists"""
+        return self.get_model_file_path().exists()
+    
+    def load_model(self):
+        """Load the model from file"""
+        import joblib
+        
+        if not self.model_file_exists():
+            raise FileNotFoundError(f"Model file not found: {self.model_path}")
+        return joblib.load(self.get_model_file_path())
+    
+    def archive(self):
+        """Archive this model version"""
+        self.is_active = False
+        self.deployment_status = 'archived'
+        self.save()
+    
+    def activate(self):
+        """Activate this model version"""
+        # Deactivate all other models
+        ModelVersion.objects.filter(is_active=True).update(is_active=False)
+        self.is_active = True
+        self.deployment_status = 'deployed'
+        self.save()
+

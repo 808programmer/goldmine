@@ -1,0 +1,52 @@
+# Docker Compose configuration for GoldMineAI
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=goldMineAI.settings
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/goldmineai
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID}
+      - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET}
+      - MAPBOX_API_KEY=${MAPBOX_API_KEY}
+      - GOLD_PRICE_TRACKER_API_KEY=${GOLD_PRICE_TRACKER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ELEVENLABS_API_KEY=dummy-value
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/sta
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=goldmineai
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

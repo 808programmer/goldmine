@@ -1,743 +1,201 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Maps{% endblock %}
+
 {% block head_extra %}
-<!-- Mapbox CSS and JS -->
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-
-<!-- Cesium CSS and JS -->
-<link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-<script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
-
-<!-- Map styles -->
-<link href="{% static 'css/map_styles.css' %}" rel="stylesheet">
-
-<!-- Diagnostic script for Cesium -->
-<script src="{% static 'js/cesium_diagnostic.js' %}"></script>
+    <!-- Leaflet CSS - Simple, reliable mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        #map-container-2d {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f3f4f6;
+        }
+        
+        .map-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 18px;
+            color: #6b7280;
+        }
+        
+        .map-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 18px;
+            color: #dc2626;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .leaflet-popup-content {
+            font-family: Arial, sans-serif;
+        }
+        
+        .leaflet-popup-content h3 {
+            margin: 0 0 10px 0;
+            color: #1f2937;
+        }
+        
+        .leaflet-popup-content p {
+            margin: 5px 0;
+            color: #374151;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-4">
+<div class="container mx-auto px-4 py-8">
     <h1 class="text-2xl font-bold mb-4 text-center text-black dark:text-white">Potaro-Siparuni Gold Mapping</h1>
 
-    <!-- LLM Analysis Controls -->
-    <!-- <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mb-6">
-        <h2 class="text-xl font-bold mb-4 text-black dark:text-white">AI Text Analysis & Model Training</h2>
-        <div class="grid md:grid-cols-2 gap-4">
-            <div>
-                <div class="mb-3">
-                    <label for="analysis-limit" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        Number of files to analyze:
-                    </label>
-                    <input type="number" id="analysis-limit" value="5" min="1" max="20"
-                           class="w-full p-2 border border-zinc-300 rounded-lg dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                </div>
-                <div class="mb-3">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="reprocess-checkbox" class="mr-2">
-                        <span class="text-sm text-zinc-700 dark:text-zinc-300">Reprocess already analyzed files</span>
-                    </label>
-                </div>
-                <div class="mb-3">
-                    <label for="openai-api-key" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        OpenAI API Key (optional):
-                    </label>
-                    <input type="password" id="openai-api-key" 
-                           class="w-full p-2 border border-zinc-300 rounded-lg dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
-                           placeholder="Leave empty to use environment variable">
-                </div>
-            </div>
-            <div>
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        Training Status:
-                    </label>
-                    <div id="training-status" class="text-sm text-zinc-600 dark:text-zinc-400">
-                        Loading status...
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 flex gap-2 flex-wrap">
-            <button id="analyze-texts-btn" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Analyze Text Files with AI
-            </button>
-            <button id="load-coordinates-btn" 
-                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Load Existing Coordinates
-            </button>
-            <button id="generate-predictions-btn" 
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Generate Gold Predictions
-            </button>
-            <button id="analyze-and-train-btn" 
-                    class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Analyze & Train Model with OpenAI
-            </button>
-        </div>
-        <div id="analysis-status" class="mt-3 text-sm text-zinc-600 dark:text-zinc-400"></div>
-    </div> -->
-
-    <div class="mb-4">
-        <form id="map-search-form" class="max-w-md mx-auto">
-            <div class="relative flex items-center">
-                <input type="search" id="map-search-input" class="block w-full p-3 ps-5 text-sm text-zinc-500 border border-zinc-300 rounded-full bg-zinc-100 focus:ring-zinc-500 focus:border-zinc-500 dark:bg-zinc-600 dark:border-zinc-600 placeholder-zinc-500 dark:placeholder-zinc-300 dark:text-white" placeholder="Search for any location by name, coordinates, etc." required />
-                <button type="submit" class="absolute right-2 text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-full text-sm px-4 py-2 dark:bg-zinc-500 dark:hover:bg-zinc-700 dark:focus:ring-zinc-500">Search</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Mineralization Trends Controls -->
-    <!-- <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mb-6">
-        <h2 class="text-xl font-bold mb-4 text-black dark:text-white">Mineralization Trend Analysis</h2>
+    <!-- Intelligent Geological Mapping -->
+    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4 text-black dark:text-white">🗺️ Intelligent Geological Mapping</h2>
         <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-            Generate trend lines based on historical geological data from uploaded files. These trends show the direction and extent of mineralization patterns.
+            Generate intelligent coordinates based on your geological source data analysis. 
+            The system analyzes your uploaded documents and creates coordinates based on real geological formations and locations.
         </p>
         
-        <div class="grid md:grid-cols-3 gap-4 mb-4">
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-                <label for="trend-type" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Trend Type:
+                <label for="num-coordinates" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Number of Coordinates:
                 </label>
-                <select id="trend-type" class="w-full p-2 border border-zinc-300 rounded-lg dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="all">All Trends</option>
-                    <option value="gold">Gold Trends</option>
-                    <option value="mineral">Mineral Trends</option>
-                    <option value="geological">Geological Formation Trends</option>
+                <input type="number" id="num-coordinates" min="5" max="100" value="25" 
+                       class="w-full p-2 border border-zinc-300 rounded-lg text-black bg-white border-zinc-300 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Range: 5-100 coordinates</p>
+            </div>
+            
+            <div>
+                <label for="mapping-confidence" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Confidence Filter:
+                </label>
+                <select id="mapping-confidence" class="w-full p-2 border border-zinc-300 rounded-lg text-black bg-white border-zinc-300 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    <option value="all">All Confidence Levels</option>
+                    <option value="high">High Confidence Only</option>
+                    <option value="medium">Medium+ Confidence</option>
+                    <option value="low">Include Low Confidence</option>
                 </select>
-            </div>
-            
-            <div>
-                <label for="confidence-threshold" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Confidence Threshold: <span id="confidence-value">10%</span>
-                </label>
-                <input type="range" id="confidence-threshold" min="0" max="100" value="10" 
-                       class="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700">
-            </div>
-            
-            <div>
-                <label for="max-trends" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Max Trends:
-                </label>
-                <input type="number" id="max-trends" min="1" max="20" value="10"
-                       class="w-full p-2 border border-zinc-300 rounded-lg dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
             </div>
         </div>
         
         <div class="flex gap-2 flex-wrap">
-            <button id="generate-trends-btn" 
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Generate Trend Lines
+            <button id="generate-intelligent-coords-btn" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="generateIntelligentCoordinates()">
+                🚀 Generate Intelligent Coordinates
             </button>
-            <button id="clear-trends-btn" 
-                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Clear Trends
+            <!-- <button id="clear-intelligent-coords-btn" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="clearIntelligentCoordinates()">
+                🗑️ Clear Intelligent Coordinates
+            </button> -->
+            <button id="clear-all-coords-btn" 
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="clearAllCoordinates()">
+                🗑️ Clear All Coordinates
             </button>
-            <button id="toggle-trends-btn" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                Toggle Visibility
+            <button id="export-geojson-btn" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="exportIntelligentCoordinatesToGeoJSON()">
+                📄 Export GeoJSON
+            </button>
+            <button id="toggle-intelligent-coords-btn" 
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="toggleIntelligentCoordinates()">
+                👁️ Toggle Visibility
             </button>
         </div>
         
-        <div id="trend-status" class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-            Ready to generate trends from historical data.
+        <div id="intelligent-mapping-status" class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Ready to generate intelligent coordinates from your geological source data.
         </div>
-    </div> -->
-
-    <div class="map-container relative overflow-hidden rounded-lg shadow-lg mb-10">
-        <!-- Map Controls -->
-        <div class="map-controls">
-            <div class="view-toggle-container">
-                <!-- <span class="view-toggle-label mr-2 text-gray-800 dark:text-white">2D</span> -->
-                <select id="map-view-selector" class="bg-transparent dark:bg-transparent border border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
-                    <option value="2d" selected>2D Map</option>
-                    <option value="3d">3D Terrain</option>
-                </select>
-            </div>
-            
-            <!-- Map Refresh Button -->
-            <div class="refresh-controls">
-                <button id="refresh-map-btn" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg transition-colors text-sm flex items-center gap-2"
-                        title="Refresh map data (updates after model training)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    Refresh
-                </button>
-                <div id="refresh-status" class="text-xs text-gray-600 dark:text-gray-400 mt-1"></div>
-            </div>
-
-        </div>
-
-        <!-- 2D map container (shown by default) -->
-        <div id="map-container-2d"></div>
         
-        <!-- 3D map container (hidden by default) -->
-        <div id="map-container-3d"></div>
-        
-        <!-- Cesium globe container (hidden by default) -->
-        <div id="cesium-container"></div>
-
-        <!-- Map Legend -->
-        <!-- <div class="map-legend">
-            <h4>Map Legend</h4>
-            
-            <div class="legend-section">
-                <h5>Gold Predictions</h5>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #3288bd;"></div>
-                    <span>Low Probability</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fee08b;"></div>
-                    <span>Medium Probability</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: #d53e4f;"></div>
-                    <span>High Probability</span>
-                </div>
-            </div>
-            <div class="legend-section">
-                <h5>Geological Survey Data</h5>
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: lime;"></div>
-                    <span>Real Survey Locations</span>
-                </div>
-            </div>
+        <!-- Debug Info -->
+        <!-- <div class="mt-3 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+            <button onclick="testButton()" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs mr-2">
+                🧪 Test JavaScript
+            </button>
+            <button onclick="checkMapStatus()" class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">
+                🔍 Check Map Status
+            </button>
+            <span id="map-status-info" class="ml-2 text-gray-600">Click to check map status</span>
         </div> -->
     </div>
     
-    <!-- <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mb-8">
-        <h2 class="text-xl font-bold mb-3 text-black dark:text-white">About the Map</h2>
-        <p class="mb-4 text-black dark:text-white">This interactive map displays gold prediction data for the Potaro-Siparuni region in Guyana. Choose between 2D, 3D terrain, or 3D globe views to visualize the terrain and geological features.</p>
-        <div class="grid md:grid-cols-2 gap-6 text-black dark:text-white">
-            <div>
-                <h3 class="font-bold mb-2 text-black dark:text-white">Map Features:</h3>
-                <ul class="list-disc pl-5 space-y-1 text-black dark:text-white">
-                    <li>Interactive 2D, 3D terrain, and 3D globe visualization</li>
-                    <li>Terrain and topographical data</li>
-                    <li>Rivers, settlements, and landmarks</li>
-                    <li>Gold prediction heatmap overlay</li>
-                    <li>Detailed information on predicted locations</li>
-                    <li>AI-powered text analysis for coordinate extraction</li>
-                    <li><strong>Mineralization trend lines</strong> based on historical data</li>
-                    <li>Geological formation and mineral type analysis</li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="font-bold mb-2">How to Use:</h3>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>Use the <strong>Mineralization Trend Analysis</strong> controls to generate trend lines</li>
-                    <li>Select trend type (Gold, Mineral, Geological Formation, or All)</li>
-                    <li>Adjust confidence threshold to filter data quality</li>
-                    <li>Click on trend lines to see detailed geological information</li>
-                    <li>Enter your OpenAI API key and click "Analyze Text Files with AI"</li>
-                    <li>Select map type from the dropdown menu (2D, 3D terrain, or 3D globe)</li>
-                    <li>Search for any location worldwide by name, landmark, or coordinates</li>
-                    <li>Click on colored points to see detailed prediction data</li>
-                    <li>Use map controls to zoom, rotate, and tilt the view</li>
-                    <li>Add new predictions from the <a href="{% url 'predict' %}" class="text-blue-600 hover:underline">Predict page</a></li>
-                </ul>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- Display Extracted Text and Analysis Results -->
-    <div id="survey-results" class="mt-4 p-4 bg-white dark:bg-zinc-800 rounded-lg shadow">
-        <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-2">Geological Survey Results</h3>
-        <div id="survey-content" class="text-zinc-700 dark:text-zinc-300">
-            Loading survey data...
+    <!-- Interactive Map -->
+    <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mt-6">
+        <h2 class="text-xl font-bold mb-4 text-black dark:text-white">🗺️ Interactive Map</h2>
+        <div id="map-container-2d">
+            <div class="map-loading">Loading map...</div>
         </div>
     </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
+<!-- Load Leaflet first, then the map handler -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Pass Mapbox API key from Django to JavaScript
-    window.MAPBOX_API_KEY = '{{ mapbox_api_key }}';
-</script>
-<script src="{% static 'js/map_handler.js' %}"></script>
-<script src="{% static 'js/cesium_map.js' %}"></script>
-<script>
-    // Global variables for map coordinates
-    let mapCoordinates = [];
-    let currentMap = null;
-
-    // Map view toggle handler
-    document.addEventListener('DOMContentLoaded', function() {
-        const mapViewSelector = document.getElementById('map-view-selector');
-        const map2DContainer = document.getElementById('map-container-2d');
-        const map3DContainer = document.getElementById('map-container-3d');
-        
-        if (mapViewSelector && map2DContainer && map3DContainer) {
-            console.log('Map view selector and containers found');
-            
-            // Function to handle view changes
-            function changeMapView(selectedValue) {
-                console.log('Changing map view to:', selectedValue);
-                
-                // Hide all map containers
-                map2DContainer.style.display = 'none';
-                map3DContainer.style.display = 'none';
-                
-                // Show the selected map container
-                if (selectedValue === '2d') {
-                    map2DContainer.style.display = 'block';
-                    // Trigger resize event for Mapbox
-                    window.dispatchEvent(new Event('resize'));
-                } else if (selectedValue === '3d') {
-                    map3DContainer.style.display = 'block';
-                    // Trigger resize event for Mapbox
-                    window.dispatchEvent(new Event('resize'));
-                }
-            }
-            
-            // Add change event listener
-            mapViewSelector.addEventListener('change', function() {
-                changeMapView(mapViewSelector.value);
-            });
-            
-            // Initialize with the selected view
-            changeMapView(mapViewSelector.value);
-        } else {
-            console.error('Could not find map containers or selector');
-        }
-
-        // LLM Analysis functionality
-        setupLLMAnalysis();
-        
-        // Mineralization Trends functionality
-        setupMineralizationTrends();
-        
-        // Map refresh functionality
-        setupMapRefresh();
-    });
-
-    function setupLLMAnalysis() {
-        const analyzeBtn = document.getElementById('analyze-texts-btn');
-        const loadCoordinatesBtn = document.getElementById('load-coordinates-btn');
-        const generatePredictionsBtn = document.getElementById('generate-predictions-btn');
-        const analyzeAndTrainBtn = document.getElementById('analyze-and-train-btn');
-        const statusDiv = document.getElementById('analysis-status');
-
-        // Check if all required elements exist
-        if (!analyzeBtn || !loadCoordinatesBtn || !generatePredictionsBtn || !analyzeAndTrainBtn || !statusDiv) {
-            console.warn('Some LLM analysis elements not found, skipping setup');
-            return;
-        }
-
-        analyzeBtn.addEventListener('click', async function() {
-            const limit = document.getElementById('analysis-limit').value;
-            const reprocess = document.getElementById('reprocess-checkbox').checked;
-
-            statusDiv.innerHTML = '<span class="text-blue-600">Analyzing text files with AI...</span>';
-            analyzeBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/analyze-texts-for-map/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({
-                        limit: parseInt(limit),
-                        reprocess: reprocess
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    mapCoordinates = data.coordinates;
-                    statusDiv.innerHTML = `<span class="text-green-600">${data.message}</span>`;
-                    
-                    // Add coordinates to map
-                    addCoordinatesToMap(mapCoordinates);
-                } else {
-                    statusDiv.innerHTML = `<span class="text-red-600">Error: ${data.error}</span>`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                statusDiv.innerHTML = '<span class="text-red-600">Error analyzing files</span>';
-            } finally {
-                analyzeBtn.disabled = false;
-            }
-        });
-
-        loadCoordinatesBtn.addEventListener('click', async function() {
-            statusDiv.innerHTML = '<span class="text-blue-600">Loading existing coordinates...</span>';
-            loadCoordinatesBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/map-coordinates/');
-                const data = await response.json();
-
-                if (data.success) {
-                    mapCoordinates = data.coordinates;
-                    statusDiv.innerHTML = `<span class="text-green-600">Loaded ${data.total_points} coordinates</span>`;
-                    
-                    // Add coordinates to map
-                    addCoordinatesToMap(mapCoordinates);
-                } else {
-                    statusDiv.innerHTML = `<span class="text-red-600">Error: ${data.error}</span>`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                statusDiv.innerHTML = '<span class="text-red-600">Error loading coordinates</span>';
-            } finally {
-                loadCoordinatesBtn.disabled = false;
-            }
-        });
-
-        generatePredictionsBtn.addEventListener('click', async function() {
-            statusDiv.innerHTML = '<span class="text-blue-600">Generating gold predictions from LLM data...</span>';
-            generatePredictionsBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/enhanced-predictions/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({
-                        limit: 10  // Process up to 10 features
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    statusDiv.innerHTML = `<span class="text-green-600">${data.message}</span>`;
-                    
-                    // Refresh the map to show new predictions
-                    if (currentMap) {
-                        // Remove existing prediction layers
-                        if (currentMap.getSource('gold-predictions')) {
-                            currentMap.removeLayer('gold-predictions-heat');
-                            currentMap.removeLayer('gold-predictions-points');
-                            currentMap.removeSource('gold-predictions');
-                        }
-                        
-                        // Reload predictions
-                        loadGoldPredictions(currentMap);
-                    }
-                } else {
-                    statusDiv.innerHTML = `<span class="text-red-600">Error: ${data.error}</span>`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                statusDiv.innerHTML = '<span class="text-red-600">Error generating gold predictions</span>';
-            } finally {
-                generatePredictionsBtn.disabled = false;
-            }
-        });
-
-        analyzeAndTrainBtn.addEventListener('click', async function() {
-            const limit = document.getElementById('analysis-limit').value;
-            const reprocess = document.getElementById('reprocess-checkbox').checked;
-            const apiKey = document.getElementById('openai-api-key').value;
-            
-            statusDiv.innerHTML = '<span class="text-blue-600">Analyzing and training model with OpenAI...</span>';
-            analyzeAndTrainBtn.disabled = true;
-
-            try {
-                const response = await fetch('/train-model/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({
-                        limit: parseInt(limit),
-                        reprocess: reprocess,
-                        api_key: apiKey || null
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    statusDiv.innerHTML = `<span class="text-green-600">${data.message}</span>`;
-                    
-                    // Refresh the map to show new predictions
-                    if (currentMap) {
-                        // Remove existing prediction layers
-                        if (currentMap.getSource('gold-predictions')) {
-                            currentMap.removeLayer('gold-predictions-heat');
-                            currentMap.removeLayer('gold-predictions-points');
-                            currentMap.removeSource('gold-predictions');
-                        }
-                        
-                        // Reload predictions
-                        loadGoldPredictions(currentMap);
-                    }
-                    
-                    // Update training status
-                    updateTrainingStatus();
-                } else {
-                    statusDiv.innerHTML = `<span class="text-red-600">Error: ${data.error}</span>`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                statusDiv.innerHTML = '<span class="text-red-600">Error analyzing and training model</span>';
-            } finally {
-                analyzeAndTrainBtn.disabled = false;
-            }
-        });
-    }
-
-    function addCoordinatesToMap(coordinates) {
-        console.log('Adding coordinates to map:', coordinates);
-        
-        // This function will be implemented based on your map library
-        // For now, we'll just log the coordinates
-        coordinates.forEach(coord => {
-            console.log(`Coordinate: ${coord.latitude}, ${coord.longitude} - Confidence: ${coord.confidence}`);
-        });
-
-        // TODO: Add actual map integration here
-        // You'll need to modify your map_handler.js to accept and display these coordinates
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    // Fetch and display survey results
-    fetch('/api/map-coordinates/')
-        .then(response => response.json())
-        .then(data => {
-            const surveyContent = document.getElementById('survey-content');
-            if (data.success && data.features && data.features.length > 0) {
-                let html = '<ul>';
-                data.features.forEach(feature => {
-                    html += `<li class="mb-4">
-                        <h4 class="font-bold">${feature.name}</h4>
-                        <p>Type: ${feature.feature_type}</p>
-                        <p>Location: ${feature.latitude}, ${feature.longitude}</p>
-                        <p>Description: ${feature.description}</p>
-                        <p>Gold Probability: ${(feature.gold_probability * 100).toFixed(1)}%</p>
-                    </li>`;
-                });
-                html += '</ul>';
-                surveyContent.innerHTML = html;
-            } else {
-                surveyContent.innerHTML = 'No geological features available.';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching geological features:', error);
-            document.getElementById('survey-content').innerHTML = 'Error loading geological features.';
-        });
-
-    // Function to update training status
-    async function updateTrainingStatus() {
-        try {
-            const trainingStatusElement = document.getElementById('training-status');
-            if (!trainingStatusElement) {
-                console.warn('Training status element not found');
-                return;
-            }
-            
-            const response = await fetch('/api/enhanced-predictions/');
-            const data = await response.json();
-            
-            if (data.success) {
-                const predictions = data.predictions || [];
-                const statusHtml = `
-                    <div class="text-sm">
-                        <div>Predictions: ${predictions.length}</div>
-                        <div>Model: ${predictions.length > 0 ? 'Active' : 'No predictions available'}</div>
-                    </div>
-                `;
-                trainingStatusElement.innerHTML = statusHtml;
-            }
-        } catch (error) {
-            console.error('Error updating training status:', error);
-        }
+  console.log('📦 Leaflet script tag executed');
+  console.log('Leaflet loaded:', typeof L !== 'undefined');
+  
+  // Wait for Leaflet to fully load, then load handler
+  function loadMapHandler() {
+    if (typeof L === 'undefined') {
+      console.log('⏳ Waiting for Leaflet to load...');
+      setTimeout(loadMapHandler, 100);
+      return;
     }
     
-    // Load initial training status
-    updateTrainingStatus();
-
-    // Setup mineralization trends controls
-    function setupMineralizationTrends() {
-        const generateTrendsBtn = document.getElementById('generate-trends-btn');
-        const clearTrendsBtn = document.getElementById('clear-trends-btn');
-        const toggleTrendsBtn = document.getElementById('toggle-trends-btn');
-        const trendTypeSelect = document.getElementById('trend-type');
-        const confidenceThreshold = document.getElementById('confidence-threshold');
-        const confidenceValue = document.getElementById('confidence-value');
-        const maxTrendsInput = document.getElementById('max-trends');
-        const statusDiv = document.getElementById('trend-status');
-        
-        // Check if all required elements exist
-        if (!generateTrendsBtn || !clearTrendsBtn || !toggleTrendsBtn || !trendTypeSelect || 
-            !confidenceThreshold || !confidenceValue || !maxTrendsInput || !statusDiv) {
-            console.warn('Some mineralization trends elements not found, skipping setup');
-            return;
-        }
-        
-        let trendsVisible = true;
-        
-        // Update confidence value display
-        confidenceThreshold.addEventListener('input', function() {
-            confidenceValue.textContent = this.value + '%';
-        });
-        
-        // Generate trends button
-        generateTrendsBtn.addEventListener('click', async function() {
-            const trendType = trendTypeSelect.value;
-            const confidence = confidenceThreshold.value / 100;
-            const maxTrends = maxTrendsInput.value;
-            
-            statusDiv.innerHTML = '<span class="text-blue-600">Generating mineralization trends...</span>';
-            generateTrendsBtn.disabled = true;
-            
-            try {
-                const url = `/api/mineralization-trends/?type=${trendType}&confidence=${confidence}&max_trends=${maxTrends}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data.success) {
-                    statusDiv.innerHTML = `<span class="text-green-600">Generated ${data.trends.length} trends from ${data.total_features_analyzed} geological features</span>`;
-                    
-                    // Update trends on all active maps
-                    updateTrendsOnMaps(data.trends);
-                } else {
-                    statusDiv.innerHTML = `<span class="text-red-600">Error: ${data.error}</span>`;
-                }
-            } catch (error) {
-                console.error('Error generating trends:', error);
-                statusDiv.innerHTML = '<span class="text-red-600">Error generating trends</span>';
-            } finally {
-                generateTrendsBtn.disabled = false;
-            }
-        });
-        
-        // Clear trends button
-        clearTrendsBtn.addEventListener('click', function() {
-            clearTrendsOnMaps();
-            statusDiv.innerHTML = '<span class="text-gray-600">Trends cleared</span>';
-        });
-        
-        // Toggle visibility button
-        toggleTrendsBtn.addEventListener('click', function() {
-            trendsVisible = !trendsVisible;
-            toggleTrendsVisibility(trendsVisible);
-            toggleTrendsBtn.textContent = trendsVisible ? 'Hide Trends' : 'Show Trends';
-            statusDiv.innerHTML = `<span class="text-blue-600">Trends ${trendsVisible ? 'shown' : 'hidden'}</span>`;
-        });
-    }
+    console.log('✅ Leaflet is loaded, loading map handler...');
     
-    // Update trends on all active maps
-    function updateTrendsOnMaps(trends) {
-        // Update 2D map
-        const map2D = window.map2D;
-        if (map2D && window.updateMineralizationTrendsWithData) {
-            window.updateMineralizationTrendsWithData(map2D, trends);
-        }
+    // Dynamically load the map handler script
+    var script = document.createElement('script');
+    script.src = '{% static "js/leaflet_map_handler.js" %}';
+    script.onload = function() {
+      console.log('✅ Map handler script loaded');
+      
+      // Force initialization after handler loads
+      setTimeout(function() {
+        var container = document.getElementById('map-container-2d');
+        console.log('Container exists:', !!container);
+        console.log('initializeMap function:', typeof initializeMap !== 'undefined');
+        console.log('Map initialized:', window.__leafletMapInited);
         
-        // Update 3D map
-        const map3D = window.map3D;
-        if (map3D && window.updateMineralizationTrendsWithData) {
-            window.updateMineralizationTrendsWithData(map3D, trends);
+        if (container && typeof initializeMap === 'function' && !window.__leafletMapInited) {
+          console.log('🚀 Forcing map initialization...');
+          try {
+            initializeMap();
+          } catch(e) {
+            console.error('❌ Initialization error:', e);
+            container.innerHTML = '<div class="map-error">Error: ' + e.message + '</div>';
+          }
+        } else if (container && !window.__leafletMapInited) {
+          console.error('❌ Cannot initialize - missing requirements');
+          container.innerHTML = '<div class="map-error">Error: Map initialization failed. Check console for details.</div>';
         }
-    }
-    
-    // Clear trends on all maps
-    function clearTrendsOnMaps() {
-        const map2D = window.map2D;
-        if (map2D && window.clearMineralizationTrends) {
-            window.clearMineralizationTrends(map2D);
-        }
-        
-        const map3D = window.map3D;
-        if (map3D && window.clearMineralizationTrends) {
-            window.clearMineralizationTrends(map3D);
-        }
-    }
-    
-    // Toggle trends visibility
-    function toggleTrendsVisibility(visible) {
-        const map2D = window.map2D;
-        if (map2D && window.toggleMineralizationTrendsVisibility) {
-            window.toggleMineralizationTrendsVisibility(map2D, visible);
-        }
-        
-        const map3D = window.map3D;
-        if (map3D && window.toggleMineralizationTrendsVisibility) {
-            window.toggleMineralizationTrendsVisibility(map3D, visible);
-        }
-    }
-    
-    // Setup map refresh functionality
-    function setupMapRefresh() {
-        const refreshBtn = document.getElementById('refresh-map-btn');
-        const refreshStatus = document.getElementById('refresh-status');
-        
-        if (!refreshBtn || !refreshStatus) {
-            console.warn('Map refresh elements not found, skipping setup');
-            return;
-        }
-        
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', async function() {
-                // Disable button and show loading state
-                refreshBtn.disabled = true;
-                refreshBtn.innerHTML = `
-                    <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    Refreshing...
-                `;
-                refreshStatus.innerHTML = '<span class="text-blue-600">Refreshing map data...</span>';
-                
-                try {
-                    // Call the global refresh function
-                    if (window.refreshMap) {
-                        window.refreshMap();
-                        refreshStatus.innerHTML = '<span class="text-green-600">Map refreshed successfully!</span>';
-                    } else {
-                        refreshStatus.innerHTML = '<span class="text-red-600">Refresh function not available</span>';
-                    }
-                } catch (error) {
-                    console.error('Error refreshing map:', error);
-                    refreshStatus.innerHTML = '<span class="text-red-600">Error refreshing map</span>';
-                } finally {
-                    // Re-enable button and restore original state
-                    setTimeout(() => {
-                        refreshBtn.disabled = false;
-                        refreshBtn.innerHTML = `
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            Refresh
-                        `;
-                        refreshStatus.innerHTML = '';
-                    }, 2000);
-                }
-            });
-        }
-    }
-    
-
+      }, 100);
+    };
+    script.onerror = function() {
+      console.error('❌ Failed to load map handler script');
+      var container = document.getElementById('map-container-2d');
+      if (container) {
+        container.innerHTML = '<div class="map-error">Error: Failed to load map handler. Check console for details.</div>';
+      }
+    };
+    document.head.appendChild(script);
+  }
+  
+  loadMapHandler();
 </script>
 {% endblock %}
+ 

@@ -87,12 +87,23 @@
     max-width: 420px;
     width: 100%;
     margin: 0; /* Reset any margin */
+    position: fixed; /* ensure viewport anchoring */
+    right: 16px; /* default mobile spacing */
+    bottom: 16px; /* default mobile spacing */
+    z-index: 9999; /* above maps and other UI */
 }
 
 #footer-modal.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0) scale(1);
+}
+
+@media (min-width: 768px) {
+    #footer-modal {
+        right: 32px;
+        bottom: 32px;
+    }
 }
 
 #footer-modal .relative {

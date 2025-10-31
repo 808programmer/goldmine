@@ -1,0 +1,1660 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.79011105411461,
+          6.535264201981537
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Report on the Gold and Management Deposits of the Lower Barama River, North West District-1_1755482212.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.82766476727737,
+          7.954271717414352
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Report on the Gold and Management Deposits of the Lower Barama River, North West District-1_1755482212.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.70115615139908,
+          8.20159451534454
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Report on the Gold and Management Deposits of the Lower Barama River, North West District-1_1755482212.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.37165269537079,
+          6.938848653415406
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Report on the Gold and Management Deposits of the Lower Barama River, North West District-1_1755482212.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.40637973005451,
+          5.166231169958515
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Report on the Gold and Management Deposits of the Lower Barama River, North West District-1_1755482212.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.83989615185164,
+          6.5565762152084
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Geology And Mineral Deposits of The Upper Waini River, N.W.D_1755481859.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.71167452922117,
+          7.9236677117357805
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Geology And Mineral Deposits of The Upper Waini River, N.W.D_1755481859.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.80945270277946,
+          8.099180493367644
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Geology And Mineral Deposits of The Upper Waini River, N.W.D_1755481859.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.347224815951805,
+          6.896963830857251
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Geology And Mineral Deposits of The Upper Waini River, N.W.D_1755481859.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.20852067948319,
+          5.21027169757068
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Geology And Mineral Deposits of The Upper Waini River, N.W.D_1755481859.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.76181455624718,
+          6.472160826595167
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Report on The Aranka Goldfield , cuyuni river_1755483669.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.75385104351038,
+          7.9967298020174375
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Report on The Aranka Goldfield , cuyuni river_1755483669.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.69964584600703,
+          8.107833275606962
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Report on The Aranka Goldfield , cuyuni river_1755483669.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.578601864912606,
+          6.743827081884998
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Report on The Aranka Goldfield , cuyuni river_1755483669.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.15521059322739,
+          5.01736907880295
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Report on The Aranka Goldfield , cuyuni river_1755483669.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.87013551415629,
+          6.302233417945032
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Geological Survey Of British Guiana_1755482009.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.86455701245992,
+          7.61090827578407
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Geological Survey Of British Guiana_1755482009.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.924740594633214,
+          8.065492073318413
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Geological Survey Of British Guiana_1755482009.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.6698670353027,
+          6.751313429521361
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Geological Survey Of British Guiana_1755482009.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.17830794376351,
+          5.3588971898837645
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Geological Survey Of British Guiana_1755482009.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.836143863075094,
+          6.688638027397981
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Geology And Gold Deposits_1755481947.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.60507706076839,
+          7.704760619079739
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Geology And Gold Deposits_1755481947.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.624539647857056,
+          8.090226064035589
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Geology And Gold Deposits_1755481947.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.47389215912267,
+          6.684687173279915
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Geology And Gold Deposits_1755481947.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.388381099325606,
+          5.118282677721021
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Geology And Gold Deposits_1755481947.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.997056845312514,
+          6.664661944521595
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Reports on Area between Arakaka and Kokerit, North West District 1938_1755483531.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.79259730518116,
+          7.733516782528302
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Reports on Area between Arakaka and Kokerit, North West District 1938_1755483531.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.81758907365791,
+          8.268959033993601
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Reports on Area between Arakaka and Kokerit, North West District 1938_1755483531.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.42664662245333,
+          6.988137695675849
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Reports on Area between Arakaka and Kokerit, North West District 1938_1755483531.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.42276107513517,
+          5.300561958739619
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Reports on Area between Arakaka and Kokerit, North West District 1938_1755483531.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.92898517778694,
+          6.396787161415557
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Reports on a Geological Reconnaissance Survey of part of the Noth-west District_1755482400.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.88145382225878,
+          7.73100851245734
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Reports on a Geological Reconnaissance Survey of part of the Noth-west District_1755482400.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.832589610000355,
+          8.067810944058893
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Reports on a Geological Reconnaissance Survey of part of the Noth-west District_1755482400.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.40610350668576,
+          6.918796861469286
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Reports on a Geological Reconnaissance Survey of part of the Noth-west District_1755482400.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.240505620232035,
+          5.135806797332353
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Reports on a Geological Reconnaissance Survey of part of the Noth-west District_1755482400.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.70102467013623,
+          6.454759595599773
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Report on an area between Quartzstone head Aremu Mine and the Puruni River near Peters mine_1755483254.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.81849881532231,
+          7.62898325549201
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Report on an area between Quartzstone head Aremu Mine and the Puruni River near Peters mine_1755483254.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.87628922576788,
+          8.301090503141358
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Report on an area between Quartzstone head Aremu Mine and the Puruni River near Peters mine_1755483254.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.37743282445714,
+          6.922379724366003
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Report on an area between Quartzstone head Aremu Mine and the Puruni River near Peters mine_1755483254.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.271028518815505,
+          5.384840792519915
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Report on an area between Quartzstone head Aremu Mine and the Puruni River near Peters mine_1755483254.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.930044570002025,
+          6.65652039350535
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "The Gold Deposits of the Cuyuni River_1755482086.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.92185306979012,
+          7.705783148933233
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "The Gold Deposits of the Cuyuni River_1755482086.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.854226375149146,
+          8.00186109318756
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "The Gold Deposits of the Cuyuni River_1755482086.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.533066247378606,
+          6.937878916923973
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "The Gold Deposits of the Cuyuni River_1755482086.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.30936448328651,
+          5.2068802917288135
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "The Gold Deposits of the Cuyuni River_1755482086.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.95679964784021,
+          6.375655436042268
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Explantory Note on the Geological Map of the Geoete_1755483355.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.86824672374477,
+          7.806852868516434
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Explantory Note on the Geological Map of the Geoete_1755483355.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.940999839589445,
+          8.213912563922216
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Explantory Note on the Geological Map of the Geoete_1755483355.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.52666650319843,
+          6.896845231601905
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Explantory Note on the Geological Map of the Geoete_1755483355.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.28340823301248,
+          5.148612502756118
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron",
+          "Lead",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Explantory Note on the Geological Map of the Geoete_1755483355.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.60817380149077,
+          6.368207753242723
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Iron"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Report on a Short visits to Marudi Mountain gold working,Rupununi District , 1934_1755482362.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.6811523895309,
+          7.880719683992902
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Iron"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Report on a Short visits to Marudi Mountain gold working,Rupununi District , 1934_1755482362.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.9709011750638,
+          8.292167045836301
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Iron"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Report on a Short visits to Marudi Mountain gold working,Rupununi District , 1934_1755482362.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.570868105266335,
+          6.742917500896325
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Iron"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Report on a Short visits to Marudi Mountain gold working,Rupununi District , 1934_1755482362.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.3094817137089,
+          5.267723071490972
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Iron"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Report on a Short visits to Marudi Mountain gold working,Rupununi District , 1934_1755482362.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.758280528427925,
+          6.469971395378747
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Titanium",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Report explanatory of the geology of essequibo potaro konawaruk and demerara river goldfield._1755482564.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.829256924497905,
+          7.656816990972441
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Titanium",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Report explanatory of the geology of essequibo potaro konawaruk and demerara river goldfield._1755482564.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.98799634025499,
+          8.08192816459357
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Titanium",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Report explanatory of the geology of essequibo potaro konawaruk and demerara river goldfield._1755482564.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.60860661730101,
+          6.679494818597408
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Titanium",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Report explanatory of the geology of essequibo potaro konawaruk and demerara river goldfield._1755482564.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.35320440735231,
+          5.026581944525311
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Copper",
+          "Lead",
+          "Titanium",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Report explanatory of the geology of essequibo potaro konawaruk and demerara river goldfield._1755482564.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.65027027960387,
+          6.589042186313109
+        ]
+      },
+      "properties": {
+        "id": "point_1",
+        "name": "Cuyuni River Alluvial - Point 1",
+        "formation": "River alluvial deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. River alluvial deposits",
+        "source_file": "Manganese deposits in the north west district, British Guiana._1755482872.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.79829736400592,
+          7.732298610467482
+        ]
+      },
+      "properties": {
+        "id": "point_2",
+        "name": "Barama River Alluvial - Point 2",
+        "formation": "Floodplain deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Floodplain deposits",
+        "source_file": "Manganese deposits in the north west district, British Guiana._1755482872.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.64294029688509,
+          8.393431414139226
+        ]
+      },
+      "properties": {
+        "id": "point_3",
+        "name": "Waini River Alluvial - Point 3",
+        "formation": "Deltaic deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Deltaic deposits",
+        "source_file": "Manganese deposits in the north west district, British Guiana._1755482872.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.457839476390504,
+          6.733606742803456
+        ]
+      },
+      "properties": {
+        "id": "point_4",
+        "name": "Essequibo River Alluvial - Point 4",
+        "formation": "Major river system",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Major river system",
+        "source_file": "Manganese deposits in the north west district, British Guiana._1755482872.txt",
+        "source_date": "2025-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.48786235115481,
+          5.010602363153215
+        ]
+      },
+      "properties": {
+        "id": "point_5",
+        "name": "Potaro River Alluvial - Point 5",
+        "formation": "Highland river deposits",
+        "minerals": [
+          "Gold",
+          "Manganese",
+          "Iron",
+          "Lead",
+          "Bauxite",
+          "Diamond"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis. Highland river deposits",
+        "source_file": "Manganese deposits in the north west district, British Guiana._1755482872.txt",
+        "source_date": "2025-08-29"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1108 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.168582,
+          6.893035
+        ]
+      },
+      "properties": {
+        "id": "geo_point_001",
+        "name": "Aranka Goldfield - Point 1",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Aranka Goldfield. Major goldfield with quartz vein systems",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.888956,
+          6.581143
+        ]
+      },
+      "properties": {
+        "id": "geo_point_002",
+        "name": "Cuyuni River Goldfield - Point 2",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Cuyuni River Goldfield. River alluvial gold deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.681344,
+          7.840653
+        ]
+      },
+      "properties": {
+        "id": "geo_point_003",
+        "name": "Lower Barama River - Point 3",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Lower Barama River. North West District alluvial deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.734864,
+          8.253879
+        ]
+      },
+      "properties": {
+        "id": "geo_point_004",
+        "name": "Upper Waini River - Point 4",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold",
+          "Manganese"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Upper Waini River. North West District mineral deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.161149,
+          5.093761
+        ]
+      },
+      "properties": {
+        "id": "geo_point_005",
+        "name": "Potaro River Goldfield - Point 5",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Potaro River Goldfield. Major goldfield in central Guyana",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.546831,
+          6.798212
+        ]
+      },
+      "properties": {
+        "id": "geo_point_006",
+        "name": "Essequibo River Goldfield - Point 6",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis of Essequibo River Goldfield. Major river system gold deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.858423,
+          7.858184
+        ]
+      },
+      "properties": {
+        "id": "geo_point_007",
+        "name": "Kokerit Area - Point 7",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "medium",
+        "description": "Generated from geological analysis of Kokerit Area. North West District vein deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.869989,
+          6.053366
+        ]
+      },
+      "properties": {
+        "id": "geo_point_008",
+        "name": "Aremu Mine Area - Point 8",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Aremu Mine Area. Historical mine with quartz veins",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.690082,
+          6.186732
+        ]
+      },
+      "properties": {
+        "id": "geo_point_009",
+        "name": "Peters Mine Area - Point 9",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Peters Mine Area. Historical mine near Puruni River",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.728501,
+          8.059859
+        ]
+      },
+      "properties": {
+        "id": "geo_point_010",
+        "name": "North West Manganese - Point 10",
+        "formation": "metamorphic",
+        "minerals": [
+          "Manganese"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of North West Manganese. Manganese deposits in North West District",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.143503,
+          6.829113
+        ]
+      },
+      "properties": {
+        "id": "geo_point_011",
+        "name": "Aranka Goldfield - Point 11",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "medium",
+        "description": "Generated from geological analysis of Aranka Goldfield. Major goldfield with quartz vein systems",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.689689,
+          6.373341
+        ]
+      },
+      "properties": {
+        "id": "geo_point_012",
+        "name": "Cuyuni River Goldfield - Point 12",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Cuyuni River Goldfield. River alluvial gold deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.743955,
+          7.813254
+        ]
+      },
+      "properties": {
+        "id": "geo_point_013",
+        "name": "Lower Barama River - Point 13",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "medium",
+        "description": "Generated from geological analysis of Lower Barama River. North West District alluvial deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.851712,
+          8.215097
+        ]
+      },
+      "properties": {
+        "id": "geo_point_014",
+        "name": "Upper Waini River - Point 14",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold",
+          "Manganese"
+        ],
+        "confidence": "medium",
+        "description": "Generated from geological analysis of Upper Waini River. North West District mineral deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.33692,
+          5.309923
+        ]
+      },
+      "properties": {
+        "id": "geo_point_015",
+        "name": "Potaro River Goldfield - Point 15",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Potaro River Goldfield. Major goldfield in central Guyana",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.523657,
+          6.706582
+        ]
+      },
+      "properties": {
+        "id": "geo_point_016",
+        "name": "Essequibo River Goldfield - Point 16",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Essequibo River Goldfield. Major river system gold deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.815253,
+          7.668875
+        ]
+      },
+      "properties": {
+        "id": "geo_point_017",
+        "name": "Kokerit Area - Point 17",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Kokerit Area. North West District vein deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.870288,
+          6.340225
+        ]
+      },
+      "properties": {
+        "id": "geo_point_018",
+        "name": "Aremu Mine Area - Point 18",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Aremu Mine Area. Historical mine with quartz veins",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.718673,
+          6.131272
+        ]
+      },
+      "properties": {
+        "id": "geo_point_019",
+        "name": "Peters Mine Area - Point 19",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Peters Mine Area. Historical mine near Puruni River",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.913004,
+          7.945184
+        ]
+      },
+      "properties": {
+        "id": "geo_point_020",
+        "name": "North West Manganese - Point 20",
+        "formation": "metamorphic",
+        "minerals": [
+          "Manganese"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of North West Manganese. Manganese deposits in North West District",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.199863,
+          6.670768
+        ]
+      },
+      "properties": {
+        "id": "geo_point_021",
+        "name": "Aranka Goldfield - Point 21",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Aranka Goldfield. Major goldfield with quartz vein systems",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.378776,
+          2.628048
+        ]
+      },
+      "properties": {
+        "id": "geo_point_022",
+        "name": "Marudi Mountain - Point 22",
+        "formation": "vein-quartz",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Marudi Mountain. Mountain gold workings in Rupununi District",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58.880143,
+          6.543438
+        ]
+      },
+      "properties": {
+        "id": "geo_point_023",
+        "name": "Cuyuni River Goldfield - Point 23",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "low",
+        "description": "Generated from geological analysis of Cuyuni River Goldfield. River alluvial gold deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.833628,
+          7.785966
+        ]
+      },
+      "properties": {
+        "id": "geo_point_024",
+        "name": "Lower Barama River - Point 24",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold"
+        ],
+        "confidence": "high",
+        "description": "Generated from geological analysis of Lower Barama River. North West District alluvial deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -59.754604,
+          8.242004
+        ]
+      },
+      "properties": {
+        "id": "geo_point_025",
+        "name": "Upper Waini River - Point 25",
+        "formation": "alluvial",
+        "minerals": [
+          "Gold",
+          "Manganese"
+        ],
+        "confidence": "medium",
+        "description": "Generated from geological analysis of Upper Waini River. North West District mineral deposits",
+        "source_analysis": {
+          "total_documents": 13,
+          "mineral_types": [
+            "iron",
+            "diamond",
+            "bauxite",
+            "lead",
+            "manganese",
+            "gold",
+            "titanium",
+            "copper"
+          ],
+          "formation_types": [
+            "diabase",
+            "granite",
+            "schist",
+            "vein",
+            "quartz",
+            "metamorphic",
+            "alluvial",
+            "gneiss"
+          ],
+          "confidence_score": 100
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Prevent flash during page transitions -->
+    <style>
+        html.loading {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
+    <script>
+        // Hide page immediately to prevent FOUC
+        document.documentElement.classList.add('loading');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/gold_price_widget.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/support_chat.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" />
+    <title>{% block title %}Goldmine AI{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure your strategy -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', /* class/media, here we use class to enable manually dark mode */
+        }
+    </script>
+    <script>
+        /**
+         * Loads the theme stored
+        */
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+    <script src="../static/tailwind.config.js"></script>
+    {% tailwind_css %}
+    <script src="{% static 'js/gold_price_tracker.js' %}" defer></script>
+    {% block head_extra %}{% endblock %}
+</head>
+
+</html> 

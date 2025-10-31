@@ -27,8 +27,15 @@ from pdfocr.adobe_ocr_service import AdobeOCRService
 from django.contrib.auth.decorators import login_required
 from pdfocr.models import PDFUpload
 from .models import ConversationSession, ConversationMessage, UserInteraction
+from .llm_prediction_service import LLMPredictionService
 import time
 from django.db import models
+from .prediction_map_service import PredictionMapService
+from .simple_prediction_service import SimplePredictionService
+from .enhanced_prediction_service import EnhancedPredictionService
+from .simple_mapping_service import SimpleMappingService
+from django.utils.decorators import method_decorator
+from .ml_model import MineralPredictionModel
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +44,8 @@ logger = logging.getLogger(__name__)
 MODEL_PATH = Path('mining/models')
 
 # Initialize the prediction model
+# Create a single shared instance to be used across views
+prediction_model = MineralPredictionModel()
 
 def process_with_adobe(file_path: str) -> str:
     """
@@ -87,9 +96,9 @@ def process_with_adobe(file_path: str) -> str:
 def load_model():
     """Load model and preprocessing objects if they exist"""
     try:
-        model = joblib.load(MODEL_PATH / "gold_predictor.joblib")
+        model = joblib.load(MODEL_PATH / "mineral_prediction_model.joblib")
         preprocessor = joblib.load(MODEL_PATH / "preprocessor.joblib")
-        label_encoders = joblib.load(MODEL_PATH / "label_encoders.joblib")
+        label_encoders = joblib.load(MODEL_PATH / "mineral_encoders.joblib")
         return model, preprocessor, label_encoders
     except FileNotFoundError as e:
         logger.warning(f"Model not loaded: {e}")
@@ -105,6 +114,12 @@ def create_account(request):
 def maps(request):
     from django.conf import settings
     return render(request, 'maps.html', {
+        'mapbox_api_key': settings.MAPBOX_API_KEY
+    })
+
+def map_test(request):
+    from django.conf import settings
+    return render(request, 'map_test.html', {
         'mapbox_api_key': settings.MAPBOX_API_KEY
     })
 
@@ -247,23 +262,42 @@ def train_model_view(request):
                 # Train the model
                 result = train_model_from_dataset(dataset)
                 
-                if not result:
-                    return JsonResponse({'error': 'Model training failed'}, status=500)
+                # Ensure result is a dict
+                if not isinstance(result, dict):
+                    logger.error(f"train_model_from_dataset returned non-dict: {type(result)}")
+                    return JsonResponse({
+                        'error': 'Model training failed - invalid return type'
+                    }, status=500)
+                
+                if not result.get('success', False):
+                    error_msg = result.get('error', 'Model training failed')
+                    return JsonResponse({
+                        'error': error_msg
+                    }, status=500)
+                
+                # Extract values safely
+                test_accuracy = result.get('test_accuracy') or result.get('accuracy', 0)
+                model_path = result.get('model_path', '')
                 
                 # Create training record
-                training_record = TrainingRecord.objects.create(
-                    dataset=dataset,
-                    accuracy=result['test_accuracy'],
-                    model_path=result['model_path']
-                )
+                try:
+                    training_record = TrainingRecord.objects.create(
+                        dataset=dataset,
+                        accuracy=float(test_accuracy) if test_accuracy is not None else 0,
+                        model_path=str(model_path) if model_path else ''
+                    )
+                    record_id = training_record.id
+                except Exception as e:
+                    logger.error(f"Error creating training record: {e}")
+                    record_id = None
                 
                 # Return success with detailed metrics
                 return JsonResponse({
                     'success': True,
                     'message': 'Model trained successfully',
-                    'training_record_id': training_record.id,
-                    'accuracy': result['test_accuracy'],
-                    'f1_score': result.get('test_f1', None),
+                    'training_record_id': record_id,
+                    'accuracy': float(test_accuracy) if test_accuracy is not None else 0,
+                    'f1_score': result.get('test_f1') or result.get('f1_score'),
                     'model_type': result.get('model_type', 'Unknown')
                 })
                 
@@ -367,23 +401,41 @@ def train_model(request):
         # Train the model
         results = prediction_model.train()
         
+        # Ensure results is a dict
+        if not isinstance(results, dict):
+            logger.error(f"prediction_model.train() returned non-dict: {type(results)}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Model training failed - invalid return type'
+            }, status=400)
+        
+        # Extract values safely
+        accuracy = results.get('accuracy', 0)
+        f1_score = results.get('f1_score', 0)
+        classification_report = results.get('classification_report', '')
+        
         # Save training record
-        training_record = TrainingRecord.objects.create(
-            dataset=None,  # You might want to link this to a specific dataset
-            accuracy=results['accuracy'],
-            model_path=str(prediction_model.model_path)
-        )
+        try:
+            training_record = TrainingRecord.objects.create(
+                dataset=None,  # You might want to link this to a specific dataset
+                accuracy=float(accuracy) if accuracy is not None else 0,
+                model_path=str(prediction_model.model_path)
+            )
+        except Exception as e:
+            logger.error(f"Error creating training record: {e}")
+            # Continue without saving record
         
         return JsonResponse({
             'success': True,
             'results': {
-                'accuracy': results['accuracy'],
-                'f1_score': results['f1_score'],
-                'classification_report': results['classification_report']
+                'accuracy': float(accuracy) if accuracy is not None else 0,
+                'f1_score': float(f1_score) if f1_score is not None else 0,
+                'classification_report': str(classification_report) if classification_report else ''
             }
         })
         
     except Exception as e:
+        logger.error(f"Error in train_model: {e}", exc_info=True)
         return JsonResponse({
             'success': False,
             'error': str(e)
@@ -1048,60 +1100,23 @@ def generate_predictions_from_llm_data(request):
 def get_enhanced_predictions(request):
     """Get enhanced prediction data for map display with supporting features"""
     try:
-        # First try to get enhanced predictions from LLM service
-        try:
-            
-            service = LLMPredictionService()
-            predictions = service.get_predictions_for_map()
-            
-            if predictions:
-                return JsonResponse({
-                    'success': True,
-                    'predictions': predictions,
-                    'total_predictions': len(predictions)
-                })
-        except Exception as e:
-            logger.warning(f"LLM prediction service failed, falling back to basic predictions: {str(e)}")
+        # Use the EnhancedPredictionService
+        prediction_service = EnhancedPredictionService()
+        predictions = prediction_service.get_predictions_for_map()
         
-        # Fallback to basic prediction history
-        predictions = PredictionHistory.objects.all().order_by('-created_at')
-        
-        # Get existing geological feature coordinates to avoid overlap
-        from .models import GeologicalFeature
-        existing_feature_coords = set()
-        for feature in GeologicalFeature.objects.all():
-            existing_feature_coords.add((feature.latitude, feature.longitude))
-        
-        map_data = []
-        for prediction in predictions:
-            # Skip predictions that overlap with geological features
-            if (prediction.latitude, prediction.longitude) in existing_feature_coords:
-                logger.info(f"Skipping prediction at ({prediction.latitude}, {prediction.longitude}) - overlaps with geological feature")
-                continue
-                
-            map_point = {
-                'latitude': prediction.latitude,
-                'longitude': prediction.longitude,
-                'elevation': prediction.elevation,
-                'soil_type': prediction.soil_type or 'unknown',
-                'geological_formation': prediction.geological_formation or 'unknown',
-                'probability': prediction.probability,
-                'confidence': prediction.confidence,
-                'mineral_type': prediction.mineral_type or 'gold',
-                'depth_range': prediction.depth_range or 'Unknown',
-                'extraction_difficulty': prediction.extraction_difficulty or 'Medium',
-                'created_at': prediction.created_at.isoformat(),
-                'survey_title': 'Unknown',  # PredictionHistory doesn't have survey field
-                'supporting_features': [],  # Empty for basic predictions
-                'prediction_type': 'manual'  # Mark as manual prediction
-            }
-            map_data.append(map_point)
-        
-        return JsonResponse({
-            'success': True,
-            'predictions': map_data,
-            'total_predictions': len(map_data)
-        })
+        if predictions:
+            return JsonResponse({
+                'success': True,
+                'predictions': predictions,
+                'total_predictions': len(predictions)
+            })
+        else:
+            return JsonResponse({
+                'success': True,
+                'predictions': [],
+                'total_predictions': 0,
+                'message': 'No predictions available. Generate intelligent predictions based on your geological documents.'
+            })
         
     except Exception as e:
         logger.error(f"Error getting enhanced predictions: {str(e)}")
@@ -1110,11 +1125,6 @@ def get_enhanced_predictions(request):
             'error': str(e)
         }, status=500)
 
-@csrf_exempt
-@require_POST
-@csrf_exempt
-@require_POST
-@csrf_exempt
 @csrf_exempt
 def get_mineralization_trends(request):
     """
@@ -1140,13 +1150,6 @@ def get_mineralization_trends(request):
                     "trends": []
                 })
             
-            if not features:
-                return JsonResponse({
-                    "success": False,
-                    "message": "No geological features found with sufficient confidence",
-                    "trends": []
-                })
-            
             # Analyze features to identify trends
             trends = analyze_mineralization_trends(features, trend_type, max_trends)
             
@@ -1154,7 +1157,7 @@ def get_mineralization_trends(request):
                 "success": True,
                 "message": f"Generated {len(trends)} mineralization trends",
                 "trends": trends,
-                "total_features_analyzed": len(features) if hasattr(features, '__len__') else features.count()
+                "total_features_analyzed": features.count()
             })
             
         except Exception as e:
@@ -1164,6 +1167,7 @@ def get_mineralization_trends(request):
                 "error": str(e)
             }, status=500)
     
+    # Only return 405 for non-GET methods
     return JsonResponse({"error": "Method not allowed"}, status=405)
 
 # Sample data generation removed for accuracy - only real extracted data is used
@@ -1623,7 +1627,7 @@ def get_data_quality_metrics(request):
         }, status=500)
 
 @csrf_exempt
-@require_http_methods(["POST"])
+@require_POST
 def generate_intelligent_coordinates(request):
     """
     Generate intelligent coordinates using advanced ML patterns
@@ -1636,15 +1640,40 @@ def generate_intelligent_coordinates(request):
         exploration_radius = data.get('exploration_radius', 0.5)
         
         # Initialize intelligent prediction service
+        from .intelligent_coordinate_service import IntelligentCoordinateService
+        service = IntelligentCoordinateService()
         
         # Generate intelligent coordinates
         result = service.generate_intelligent_coordinates(
-            num_predictions=num_predictions,
-            confidence_threshold=confidence_threshold,
-            exploration_radius=exploration_radius
+            query="geological exploration in Guyana",
+            num_coordinates=num_predictions
         )
         
-        return JsonResponse(result)
+        if result and len(result) > 0:
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully generated {len(result)} intelligent coordinates',
+                'coordinates_generated': len(result),
+                'exploration_areas': [
+                    {
+                        'center_lat': coord['latitude'],
+                        'center_lon': coord['longitude'],
+                        'radius': exploration_radius,
+                        'prediction_count': 1,
+                        'avg_confidence': coord.get('confidence', 0.8),
+                        'avg_gold_probability': 0.7 if coord.get('mineral_type') == 'gold' else 0.5,
+                        'exploration_priority': 'high' if coord.get('confidence', 0) > confidence_threshold else 'medium',
+                        'recommended_actions': ['Field survey', 'Soil sampling', 'Geological mapping']
+                    }
+                    for coord in result
+                ]
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Failed to generate intelligent coordinates',
+                'coordinates_generated': 0
+            })
         
     except Exception as e:
         logger.error(f"Error generating intelligent coordinates: {e}")
@@ -1753,11 +1782,6 @@ def get_query_history(request):
             'message': f'Error: {str(e)}'
         })
 
-@csrf_exempt
-@require_POST
-@csrf_exempt
-@require_http_methods(["POST"])
-@csrf_exempt
 @csrf_exempt
 def get_intelligent_coordinates(request):
     """Get intelligent coordinates for map display"""
@@ -2816,3 +2840,635 @@ def _extract_location_name(description):
 
 
 # Old conversation functions removed - replaced by unified chat system
+
+@csrf_exempt
+def get_openai_training_status(request):
+    """
+    API endpoint to get OpenAI training status and statistics
+    """
+    try:
+        from .models import PDFTextData, GeologicalFeature, TrainingRecord
+        from .llm_model_trainer import LLMModelTrainer
+        
+        # Get basic statistics
+        total_texts = PDFTextData.objects.count()
+        processed_texts = PDFTextData.objects.filter(is_processed=True).count()
+        total_features = GeologicalFeature.objects.count()
+        
+        # Get training records
+        training_records = TrainingRecord.objects.all().order_by('-training_date')
+        latest_training = training_records.first() if training_records.exists() else None
+        
+        # Check if model is available
+        model_available = False
+        try:
+            from .ml_model import MineralPredictionModel
+            ml_model = MineralPredictionModel()
+            model_available = ml_model.load_model()
+        except:
+            model_available = False
+        
+        # Calculate processing progress
+        processing_progress = 0
+        if total_texts > 0:
+            processing_progress = (processed_texts / total_texts) * 100
+        
+        # Get recent activity
+        recent_uploads = PDFTextData.objects.filter(
+            created_at__gte=timezone.now() - timezone.timedelta(days=7)
+        ).count()
+        
+        recent_features = GeologicalFeature.objects.filter(
+            created_at__gte=timezone.now() - timezone.timedelta(days=7)
+        ).count()
+        
+        return JsonResponse({
+            "success": True,
+            "status": {
+                "total_texts": total_texts,
+                "processed_texts": processed_texts,
+                "total_features": total_features,
+                "model_available": model_available,
+                "processing_progress": round(processing_progress, 2),
+                "recent_uploads_7d": recent_uploads,
+                "recent_features_7d": recent_features
+            },
+            "latest_training": {
+                "date": latest_training.training_date.isoformat() if latest_training else None,
+                "accuracy": latest_training.accuracy if latest_training else None,
+                "model_path": latest_training.model_path if latest_training else None
+            } if latest_training else None,
+            "message": "Training status retrieved successfully"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting OpenAI training status: {e}")
+        return JsonResponse({
+            "success": False,
+            "error": str(e),
+            "status": {
+                "total_texts": 0,
+                "processed_texts": 0,
+                "total_features": 0,
+                "model_available": False,
+                "processing_progress": 0,
+                "recent_uploads_7d": 0,
+                "recent_features_7d": 0
+            }
+        }, status=500)
+
+@csrf_exempt
+def get_intelligent_predictions_status(request):
+    """
+    API endpoint to get intelligent predictions system status
+    """
+    try:
+        from .models import PDFTextData, GeologicalFeature, PredictionHistory
+        
+        # Get basic statistics
+        total_texts = PDFTextData.objects.count()
+        processed_texts = PDFTextData.objects.filter(is_processed=True).count()
+        total_features = GeologicalFeature.objects.count()
+        total_predictions = PredictionHistory.objects.count()
+        
+        # Get recent predictions
+        recent_predictions = PredictionHistory.objects.filter(
+            created_at__gte=timezone.now() - timezone.timedelta(days=7)
+        ).count()
+        
+        # Check if intelligent prediction service is available
+        intelligent_service_available = False
+        try:
+            from .intelligent_prediction_service import IntelligentPredictionService
+            service = IntelligentPredictionService()
+            intelligent_service_available = True
+        except:
+            intelligent_service_available = False
+        
+        return JsonResponse({
+            "success": True,
+            "status": {
+                "total_texts": total_texts,
+                "processed_texts": processed_texts,
+                "total_features": total_features,
+                "total_predictions": total_predictions,
+                "recent_predictions_7d": recent_predictions,
+                "intelligent_service_available": intelligent_service_available
+            },
+            "message": "Intelligent predictions status retrieved successfully"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting intelligent predictions status: {e}")
+        return JsonResponse({
+            "success": False,
+            "error": str(e),
+            "status": {
+                "total_texts": 0,
+                "processed_texts": 0,
+                "total_features": 0,
+                "total_predictions": 0,
+                "recent_predictions_7d": 0,
+                "intelligent_service_available": False
+            }
+        }, status=500)
+
+@csrf_exempt
+def generate_intelligent_trends(request):
+    """
+    API endpoint to generate intelligent trends using AI analysis
+    """
+    try:
+        from .intelligent_prediction_service import IntelligentPredictionService
+        
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '')
+            geological_context = data.get('geological_context', '')
+            
+            service = IntelligentPredictionService()
+            trends = service.generate_intelligent_trends(query, geological_context)
+            
+            return JsonResponse({
+                "success": True,
+                "trends": trends,
+                "message": f"Generated {len(trends)} intelligent trends"
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Only POST method allowed"
+            }, status=405)
+            
+    except Exception as e:
+        logger.error(f"Error generating intelligent trends: {e}")
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+@csrf_exempt
+def analyze_historical_prospects(request):
+    """
+    API endpoint to analyze historical prospects using AI
+    """
+    try:
+        from .models import PDFTextData, GeologicalFeature
+        
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '')
+            limit = data.get('limit', 10)
+            
+            # Get relevant historical data
+            features = GeologicalFeature.objects.filter(
+                confidence_score__gte=0.5
+            ).select_related('survey').prefetch_related('mineral_deposits')[:limit]
+            
+            # Analyze prospects based on query
+            prospects = []
+            for feature in features:
+                prospect = {
+                    'id': str(feature.id),
+                    'location': f"{feature.latitude:.4f}, {feature.longitude:.4f}",
+                    'description': feature.description,
+                    'confidence': feature.confidence_score,
+                    'mineral_deposits': [
+                        {
+                            'type': deposit.mineral_type,
+                            'concentration': deposit.concentration,
+                            'depth': deposit.depth
+                        }
+                        for deposit in feature.mineral_deposits.all()
+                    ],
+                    'gold_probability': feature.gold_probability
+                }
+                prospects.append(prospect)
+            
+            return JsonResponse({
+                "success": True,
+                "prospects": prospects,
+                "total_analyzed": len(prospects),
+                "message": f"Analyzed {len(prospects)} historical prospects"
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Only POST method allowed"
+            }, status=405)
+            
+    except Exception as e:
+        logger.error(f"Error analyzing historical prospects: {e}")
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+@csrf_exempt
+def generate_model_predictions(request):
+    """
+    Generate intelligent predictions using the enhanced service based on extracted texts
+    """
+    if request.method == 'POST':
+        try:
+            # Get parameters from request
+            data = json.loads(request.body) if request.body else {}
+            prediction_density = data.get('prediction_density', 'medium')
+            focus_areas = data.get('focus_areas', None)
+            
+            # Initialize enhanced prediction service
+            prediction_service = EnhancedPredictionService()
+            
+            # Generate intelligent predictions based on extracted texts
+            result = prediction_service.generate_intelligent_predictions(
+                prediction_density=prediction_density,
+                focus_areas=focus_areas
+            )
+            
+            if result['success']:
+                return JsonResponse({
+                    'success': True,
+                    'message': f"Generated {result['predictions_created']} intelligent predictions based on geological data from your documents",
+                    'predictions_created': result['predictions_created'],
+                    'areas_analyzed': result['areas_analyzed'],
+                    'density': result['density']
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': result['error']
+                }, status=400)
+                
+        except Exception as e:
+            logger.error(f"Error generating intelligent predictions: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Only POST method allowed'
+    }, status=405)
+
+@csrf_exempt
+def clear_model_predictions(request):
+    """
+    Clear all model-generated predictions
+    """
+    if request.method == 'POST':
+        try:
+            prediction_service = EnhancedPredictionService()
+            result = prediction_service.clear_all_predictions()
+            
+            if result['success']:
+                return JsonResponse({
+                    'success': True,
+                    'message': f"Cleared {result['predictions_cleared']} predictions",
+                    'predictions_cleared': result['predictions_cleared']
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': result['error']
+                }, status=400)
+                
+        except Exception as e:
+            logger.error(f"Error clearing model predictions: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Only POST method allowed'
+    }, status=405)
+
+@csrf_exempt
+@require_POST
+def generate_intelligent_coordinates_from_source(request):
+    """Generate intelligent coordinates based on source geological data"""
+    try:
+        data = json.loads(request.body)
+        query = data.get('query', 'gold exploration in Guyana')
+        num_coordinates = data.get('num_coordinates', 10)
+        
+        # Import the intelligent coordinate service
+        from .intelligent_coordinate_service import IntelligentCoordinateService
+        
+        # Initialize service
+        service = IntelligentCoordinateService()
+        
+        # Generate intelligent coordinates based on source data
+        coordinates = service.generate_intelligent_coordinates(
+            query=query,
+            num_coordinates=num_coordinates
+        )
+        
+        if coordinates:
+            return JsonResponse({
+                'success': True,
+                'message': f'Generated {len(coordinates)} intelligent coordinates based on source geological data',
+                'coordinates': coordinates,
+                'total_coordinates': len(coordinates),
+                'query_analyzed': query,
+                'generation_method': 'source_data_analysis'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to generate intelligent coordinates'
+            }, status=400)
+            
+    except Exception as e:
+        logger.error(f"Error generating intelligent coordinates from source: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+def simple_intelligent_mapping(request):
+    """Simple intelligent mapping view using source data analysis"""
+    if request.method == 'POST':
+        try:
+            num_points = int(request.POST.get('num_points', 20))
+            num_points = max(5, min(100, num_points))  # Limit between 5-100
+            
+            service = SimpleMappingService()
+            
+            # Generate coordinates
+            coordinates = service.generate_intelligent_coordinates(num_points)
+            
+            # Export to GeoJSON
+            geojson_path = service.export_to_geojson(coordinates)
+            
+            # Get analysis summary
+            analysis = service.analyze_source_documents()
+            
+            context = {
+                'coordinates': coordinates,
+                'analysis': analysis,
+                'geojson_path': geojson_path,
+                'num_points': num_points,
+                'success': True
+            }
+            
+        except Exception as e:
+            context = {
+                'error': str(e),
+                'success': False
+            }
+    else:
+        # GET request - show form
+        service = SimpleMappingService()
+        analysis = service.analyze_source_documents()
+        
+        context = {
+            'analysis': analysis,
+            'success': False
+        }
+    
+    return render(request, 'mining/simple_mapping.html', context)
+
+@csrf_exempt
+def api_simple_intelligent_coordinates(request):
+    """API endpoint for simple intelligent coordinates"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            num_points = int(data.get('num_points', 20))
+            num_points = max(5, min(100, num_points))
+            confidence_filter = data.get('confidence_filter', 'all')
+            
+            service = SimpleMappingService()
+            coordinates = service.generate_intelligent_coordinates(num_points)
+            
+            # Apply confidence filter if specified
+            if confidence_filter != 'all':
+                filtered_coordinates = []
+                for coord in coordinates:
+                    if confidence_filter == 'high' and coord['confidence'] == 'high':
+                        filtered_coordinates.append(coord)
+                    elif confidence_filter == 'medium' and coord['confidence'] in ['high', 'medium']:
+                        filtered_coordinates.append(coord)
+                    elif confidence_filter == 'low':
+                        filtered_coordinates.append(coord)  # Include all confidence levels
+                
+                coordinates = filtered_coordinates
+                
+                # If filtering resulted in too few coordinates, generate more
+                if len(coordinates) < num_points and confidence_filter != 'low':
+                    additional_needed = num_points - len(coordinates)
+                    additional_coordinates = service.generate_intelligent_coordinates(additional_needed * 2)  # Generate more to account for filtering
+                    
+                    for coord in additional_coordinates:
+                        if len(coordinates) >= num_points:
+                            break
+                        if confidence_filter == 'high' and coord['confidence'] == 'high':
+                            coordinates.append(coord)
+                        elif confidence_filter == 'medium' and coord['confidence'] in ['high', 'medium']:
+                            coordinates.append(coord)
+            
+            return JsonResponse({
+                'success': True,
+                'coordinates': coordinates,
+                'total_points': len(coordinates),
+                'message': f'Generated {len(coordinates)} intelligent coordinates based on source data analysis (filtered by {confidence_filter} confidence)'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
+    
+    return JsonResponse({'error': 'POST method required'}, status=405)
+
+def health_check(request):
+    """Health check endpoint for Docker"""
+    return JsonResponse({
+        'status': 'healthy',
+        'timestamp': timezone.now().isoformat(),
+        'service': 'GoldMineAI'
+    })
+
+
+# ============== TRAINING MANAGEMENT & STATUS API ENDPOINTS ==============
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_training_status(request):
+    """Get comprehensive training and system status"""
+    try:
+        from .training_status_service import TrainingStatusService
+        
+        status = TrainingStatusService.get_comprehensive_status()
+        return JsonResponse({
+            'success': True,
+            'status': status
+        })
+    except Exception as e:
+        logger.error(f"Error getting training status: {e}", exc_info=True)
+        import traceback
+        error_trace = traceback.format_exc()
+        logger.error(f"Full traceback: {error_trace}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'traceback': error_trace if settings.DEBUG else None
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_validation_status(request):
+    """Get data validation status"""
+    try:
+        from .training_status_service import TrainingStatusService
+        
+        validation = TrainingStatusService.get_validation_status()
+        return JsonResponse({
+            'success': True,
+            'validation': validation
+        })
+    except Exception as e:
+        logger.error(f"Error getting validation status: {e}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def trigger_manual_training(request):
+    """Manually trigger model training"""
+    try:
+        from .automated_training_service import AutomatedTrainingService
+        
+        data = json.loads(request.body) if request.body else {}
+        force = data.get('force', False)
+        
+        service = AutomatedTrainingService()
+        result = service.trigger_auto_training(force=force)
+        
+        return JsonResponse(result)
+    except Exception as e:
+        logger.error(f"Error triggering manual training: {e}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def list_model_versions(request):
+    """List all model versions"""
+    try:
+        from .model_versioning import ModelVersionManager
+        
+        manager = ModelVersionManager()
+        limit = int(request.GET.get('limit', 10))
+        versions = manager.list_versions(limit=limit)
+        
+        versions_data = [{
+            'id': v.id,
+            'version_number': v.version_number,
+            'trained_at': v.trained_at.isoformat(),
+            'accuracy': v.accuracy,
+            'f1_score': v.f1_score,
+            'data_quality_score': v.data_quality_score,
+            'documents_used': v.documents_used,
+            'is_active': v.is_active,
+            'deployment_status': v.deployment_status,
+            'model_file_exists': v.model_file_exists(),
+            'description': v.description
+        } for v in versions]
+        
+        return JsonResponse({
+            'success': True,
+            'versions': versions_data,
+            'total': len(versions_data)
+        })
+    except Exception as e:
+        logger.error(f"Error listing model versions: {e}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def activate_model_version(request):
+    """Activate a specific model version"""
+    try:
+        from .model_versioning import ModelVersionManager
+        from .models import ModelVersion
+        
+        data = json.loads(request.body)
+        version_number = data.get('version_number')
+        
+        if not version_number:
+            return JsonResponse({
+                'success': False,
+                'error': 'version_number is required'
+            }, status=400)
+        
+        manager = ModelVersionManager()
+        success = manager.rollback_to_version(version_number)
+        
+        if success:
+            return JsonResponse({
+                'success': True,
+                'message': f'Activated model version {version_number}'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': f'Failed to activate version {version_number}'
+            }, status=400)
+            
+    except ModelVersion.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Model version not found'
+        }, status=404)
+    except Exception as e:
+        logger.error(f"Error activating model version: {e}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def get_training_progress(request):
+    """Get current training progress (for progress bars)"""
+    try:
+        from .training_status_service import TrainingStatusService
+        
+        progress = TrainingStatusService.get_training_progress()
+        
+        if progress:
+            return JsonResponse({
+                'success': True,
+                'progress': progress
+            })
+        else:
+            return JsonResponse({
+                'success': True,
+                'progress': None,
+                'message': 'No training in progress'
+            })
+    except Exception as e:
+        logger.error(f"Error getting training progress: {e}", exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+

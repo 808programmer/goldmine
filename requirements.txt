@@ -24,9 +24,8 @@ Django==5.2.1
 django-cors-headers==4.7.0
 django-environ==0.12.0
 django-os-geocoder==0.1.6
-geopy==2.6.0
+geopy==2.4.1
 geocoder==1.38.1
-spacy==3.7.2
 django-storages==1.14.2
 django-tailwind==4.0.1
 djangorestframework==3.16.0
@@ -61,6 +60,10 @@ murmurhash==1.0.13
 networkx==3.5
 numpy==2.2.6
 openai==1.88.0
+langchain
+langchain-openai
+langchain-community
+langsmith
 packaging==25.0
 pandas==2.2.3
 pdfservices-sdk==4.1.1
@@ -100,6 +103,7 @@ South==1.0.2
 spacy==3.8.7
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
+langchain-core>=0.3.0,<0.4.0
 Sphinx==8.1.3
 sphinx-rtd-theme==3.0.2
 sphinxcontrib-applehelp==2.0.0
