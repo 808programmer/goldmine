@@ -1,0 +1,12 @@
+{
+  "trained_at": "2025-11-01T01:02:39.524641",
+  "model_type": "RandomForestClassifier",
+  "features": [
+    "coordinate_count",
+    "indicator_count",
+    "confidence"
+  ],
+  "target": "has_gold_info",
+  "training_samples": 17,
+  "accuracy": 1.0
+}

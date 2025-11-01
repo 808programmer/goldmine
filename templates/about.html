@@ -1,377 +1,128 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}System Status{% endblock %}
+{% block title %}About - Gold Prediction Training{% endblock %}
 
 {% block content %}
 <section class="container mx-auto px-4 py-8 min-h-[70vh]">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8 text-center text-zinc-900 dark:text-white">System Status Dashboard</h1>
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center text-zinc-900 dark:text-white">Gold Prediction Model Training</h1>
         
-        <!-- Status Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            
-            <!-- Upload Status Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">📄 Document Uploads</h2>
-                    <div id="upload-status-indicator" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                </div>
-                <div id="upload-status-content" class="space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Total:</span>
-                        <span id="upload-total" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Processed:</span>
-                        <span id="upload-processed" class="font-semibold text-green-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Success Rate:</span>
-                        <span id="upload-success-rate" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Processing:</span>
-                        <span id="upload-processing" class="font-semibold text-yellow-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Failed:</span>
-                        <span id="upload-failed" class="font-semibold text-red-600">-</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Training Status Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">🤖 Model Training</h2>
-                    <div id="training-status-indicator" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                </div>
-                <div id="training-status-content" class="space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Status:</span>
-                        <span id="training-status" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Latest Version:</span>
-                        <span id="training-version" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Accuracy:</span>
-                        <span id="training-accuracy" class="font-semibold text-green-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">F1 Score:</span>
-                        <span id="training-f1" class="font-semibold text-blue-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Trained At:</span>
-                        <span id="training-date" class="font-semibold text-zinc-900 dark:text-white text-xs">-</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Validation Status Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">✅ Data Validation</h2>
-                    <div id="validation-status-indicator" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                </div>
-                <div id="validation-status-content" class="space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Ready:</span>
-                        <span id="validation-ready" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Quality Score:</span>
-                        <span id="validation-quality" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Documents:</span>
-                        <span id="validation-documents" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Errors:</span>
-                        <span id="validation-errors" class="font-semibold text-red-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Warnings:</span>
-                        <span id="validation-warnings" class="font-semibold text-yellow-600">-</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Auto-Training Status Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">🔄 Auto-Training</h2>
-                    <div id="auto-training-status-indicator" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                </div>
-                <div id="auto-training-status-content" class="space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Enabled:</span>
-                        <span id="auto-training-enabled" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Should Train:</span>
-                        <span id="auto-training-should" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Reason:</span>
-                        <span id="auto-training-reason" class="font-semibold text-zinc-900 dark:text-white text-xs">-</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Model Versions Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">📦 Model Versions</h2>
-                    <div id="versions-status-indicator" class="w-3 h-3 rounded-full bg-gray-400"></div>
-                </div>
-                <div id="versions-status-content" class="space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Total Versions:</span>
-                        <span id="versions-total" class="font-semibold text-zinc-900 dark:text-white">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Active:</span>
-                        <span id="versions-active" class="font-semibold text-green-600">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-600 dark:text-zinc-400">Latest:</span>
-                        <span id="versions-latest" class="font-semibold text-blue-600">-</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Actions Card -->
-            <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">⚡ Actions</h2>
-                </div>
-                <div class="space-y-3">
-                    <button id="refresh-status-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium">
-                        🔄 Refresh Status
-                    </button>
-                    <button id="trigger-training-btn" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium">
-                        🚀 Trigger Training
-                    </button>
-                    <button id="view-versions-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors font-medium">
-                        📦 View Versions
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Warnings/Errors Section -->
-        <div id="warnings-section" class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 mb-6 hidden">
-            <h3 class="font-bold text-yellow-800 dark:text-yellow-200 mb-2">⚠️ Warnings</h3>
-            <ul id="warnings-list" class="list-disc list-inside text-sm text-yellow-700 dark:text-yellow-300"></ul>
-        </div>
-        
-        <div id="errors-section" class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 mb-6 hidden">
-            <h3 class="font-bold text-red-800 dark:text-red-200 mb-2">❌ Errors</h3>
-            <ul id="errors-list" class="list-disc list-inside text-sm text-red-700 dark:text-red-300"></ul>
-        </div>
-        
-        <!-- Recommendations Section -->
-        <div id="recommendations-section" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 hidden">
-            <h3 class="font-bold text-blue-800 dark:text-blue-200 mb-2">💡 Recommendations</h3>
-            <ul id="recommendations-list" class="list-disc list-inside text-sm text-blue-700 dark:text-blue-300"></ul>
-        </div>
-        
-        <!-- Model Versions Table -->
-        <div id="versions-table-section" class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 hidden">
+        <!-- SIMPLE TRAINING SECTION -->
+        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg shadow-xl p-8 mb-8">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Model Versions History</h2>
-                <button id="close-versions-btn" class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
-                    ✕ Close
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">⚡ Train Your Model</h2>
+                    <p class="text-yellow-100">Simple, fast, and effective training process</p>
+                </div>
+                <button id="simple-train-btn" class="bg-white hover:bg-gray-100 text-yellow-600 font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    🚀 Train Model Now
                 </button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-zinc-700 uppercase bg-zinc-100 dark:bg-zinc-700 dark:text-zinc-300">
-                        <tr>
-                            <th class="px-4 py-3">Version</th>
-                            <th class="px-4 py-3">Trained At</th>
-                            <th class="px-4 py-3">Accuracy</th>
-                            <th class="px-4 py-3">F1 Score</th>
-                            <th class="px-4 py-3">Quality</th>
-                            <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="versions-table-body" class="text-zinc-900 dark:text-white">
-                        <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-zinc-500">Loading versions...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            
+            <!-- Simple Training Status -->
+            <div id="simple-train-status" class="mt-4 hidden">
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <div id="simple-train-progress" class="text-white font-semibold mb-2"></div>
+                    <div id="simple-train-message" class="text-yellow-100 text-sm"></div>
+                </div>
+            </div>
+            
+            <!-- Simple Training Results -->
+            <div id="simple-train-results" class="mt-4 hidden">
+                <div class="bg-white bg-opacity-90 rounded-lg p-4">
+                    <h3 class="font-bold text-yellow-900 mb-3">✅ Training Complete!</h3>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <span class="text-zinc-600">Documents:</span>
+                            <span id="result-docs" class="font-bold text-zinc-900 ml-2">-</span>
+                        </div>
+                        <div>
+                            <span class="text-zinc-600">Features:</span>
+                            <span id="result-features" class="font-bold text-zinc-900 ml-2">-</span>
+                        </div>
+                        <div>
+                            <span class="text-zinc-600">Samples:</span>
+                            <span id="result-samples" class="font-bold text-zinc-900 ml-2">-</span>
+                        </div>
+                        <div>
+                            <span class="text-zinc-600">Accuracy:</span>
+                            <span id="result-accuracy" class="font-bold text-green-600 ml-2">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Simple Training Error -->
+            <div id="simple-train-error" class="mt-4 hidden">
+                <div class="bg-red-100 border-l-4 border-red-500 rounded-lg p-4">
+                    <h3 class="font-bold text-red-900 mb-2">❌ Training Failed</h3>
+                    <p id="error-message" class="text-red-800 text-sm mb-2"></p>
+                    <p id="error-recommendation" class="text-red-700 text-xs italic"></p>
+                </div>
             </div>
         </div>
+        
+        <!-- Model Status Section -->
+        <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4 text-zinc-900 dark:text-white">📊 Model Status</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Model Status Card -->
+                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">🤖</span>
+                        <h3 class="font-semibold text-zinc-900 dark:text-white">Model Status</h3>
+                    </div>
+                    <p id="model-status" class="text-lg font-bold text-zinc-600 dark:text-zinc-400">Loading...</p>
+                </div>
+                
+                <!-- Last Trained Card -->
+                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">📅</span>
+                        <h3 class="font-semibold text-zinc-900 dark:text-white">Last Trained</h3>
+                    </div>
+                    <p id="last-trained" class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Never</p>
+                </div>
+                
+                <!-- Model Accuracy Card -->
+                <div class="bg-zinc-50 dark:bg-zinc-700/50 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">🎯</span>
+                        <h3 class="font-semibold text-zinc-900 dark:text-white">Accuracy</h3>
+                    </div>
+                    <p id="model-accuracy" class="text-lg font-bold text-green-600">-</p>
+                </div>
+            </div>
+            
+            <!-- Data Status -->
+            <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-600 dark:text-zinc-400">📄 Text Files Available:</span>
+                        <span id="text-files-count" class="font-semibold text-zinc-900 dark:text-white">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-600 dark:text-zinc-400">🔢 Training Samples Used:</span>
+                        <span id="training-samples" class="font-semibold text-zinc-900 dark:text-white">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-600 dark:text-zinc-400">📦 Model Type:</span>
+                        <span id="model-type" class="font-semibold text-zinc-900 dark:text-white">Random Forest</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-600 dark:text-zinc-400">🎲 Features Used:</span>
+                        <span id="features-used" class="font-semibold text-zinc-900 dark:text-white">3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 </section>
-{% endblock %}
 
-{% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Status update function
-    async function updateStatus() {
-        try {
-            const response = await fetch('/api/training-status/');
-            const data = await response.json();
-            
-            if (data.success && data.status) {
-                const status = data.status;
-                
-                // Update upload status
-                const uploads = status.uploads || {};
-                document.getElementById('upload-total').textContent = uploads.total || 0;
-                document.getElementById('upload-processed').textContent = uploads.processed || 0;
-                document.getElementById('upload-success-rate').textContent = (uploads.success_rate || 0) + '%';
-                document.getElementById('upload-processing').textContent = uploads.processing || 0;
-                document.getElementById('upload-failed').textContent = uploads.failed || 0;
-                
-                const uploadIndicator = document.getElementById('upload-status-indicator');
-                if (uploads.processed > 0) {
-                    uploadIndicator.className = 'w-3 h-3 rounded-full bg-green-500';
-                } else {
-                    uploadIndicator.className = 'w-3 h-3 rounded-full bg-yellow-500';
-                }
-                
-                // Update training status
-                const training = status.training || {};
-                document.getElementById('training-status').textContent = training.has_model ? 'Trained' : 'Not Trained';
-                document.getElementById('training-version').textContent = training.latest_version || 'N/A';
-                document.getElementById('training-accuracy').textContent = training.accuracy ? (training.accuracy * 100).toFixed(1) + '%' : 'N/A';
-                document.getElementById('training-f1').textContent = training.f1_score ? training.f1_score.toFixed(3) : 'N/A';
-                document.getElementById('training-date').textContent = training.latest_trained_at ? new Date(training.latest_trained_at).toLocaleDateString() : 'N/A';
-                
-                const trainingIndicator = document.getElementById('training-status-indicator');
-                trainingIndicator.className = training.has_model ? 'w-3 h-3 rounded-full bg-green-500' : 'w-3 h-3 rounded-full bg-red-500';
-                
-                // Update validation status
-                const validation = status.validation || {};
-                document.getElementById('validation-ready').textContent = validation.ready_for_training ? 'Yes' : 'No';
-                document.getElementById('validation-quality').textContent = validation.quality_score ? (validation.quality_score * 100).toFixed(1) + '%' : 'N/A';
-                document.getElementById('validation-documents').textContent = validation.document_count || 0;
-                document.getElementById('validation-errors').textContent = validation.errors ? validation.errors.length : 0;
-                document.getElementById('validation-warnings').textContent = validation.warnings ? validation.warnings.length : 0;
-                
-                const validationIndicator = document.getElementById('validation-status-indicator');
-                validationIndicator.className = validation.ready_for_training ? 'w-3 h-3 rounded-full bg-green-500' : 'w-3 h-3 rounded-full bg-red-500';
-                
-                // Update auto-training status
-                const autoTraining = status.auto_training || {};
-                document.getElementById('auto-training-enabled').textContent = autoTraining.enabled ? 'Yes' : 'No';
-                document.getElementById('auto-training-should').textContent = autoTraining.should_train ? 'Yes' : 'No';
-                document.getElementById('auto-training-reason').textContent = autoTraining.reason || 'N/A';
-                
-                const autoTrainingIndicator = document.getElementById('auto-training-status-indicator');
-                autoTrainingIndicator.className = autoTraining.should_train ? 'w-3 h-3 rounded-full bg-green-500' : 'w-3 h-3 rounded-full bg-gray-400';
-                
-                // Update warnings/errors/recommendations
-                if (validation.warnings && validation.warnings.length > 0) {
-                    document.getElementById('warnings-section').classList.remove('hidden');
-                    const warningsList = document.getElementById('warnings-list');
-                    warningsList.innerHTML = validation.warnings.map(w => `<li>${w}</li>`).join('');
-                } else {
-                    document.getElementById('warnings-section').classList.add('hidden');
-                }
-                
-                if (validation.errors && validation.errors.length > 0) {
-                    document.getElementById('errors-section').classList.remove('hidden');
-                    const errorsList = document.getElementById('errors-list');
-                    errorsList.innerHTML = validation.errors.map(e => `<li>${e}</li>`).join('');
-                } else {
-                    document.getElementById('errors-section').classList.add('hidden');
-                }
-                
-                if (validation.recommendations && validation.recommendations.length > 0) {
-                    document.getElementById('recommendations-section').classList.remove('hidden');
-                    const recommendationsList = document.getElementById('recommendations-list');
-                    recommendationsList.innerHTML = validation.recommendations.map(r => `<li>${r}</li>`).join('');
-                } else {
-                    document.getElementById('recommendations-section').classList.add('hidden');
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching status:', error);
-        }
-    }
-    
-    // Load model versions
-    async function loadModelVersions() {
-        try {
-            const response = await fetch('/api/model-versions/?limit=10');
-            const data = await response.json();
-            
-            if (data.success && data.versions) {
-                const versions = data.versions;
-                document.getElementById('versions-total').textContent = versions.length;
-                document.getElementById('versions-active').textContent = versions.filter(v => v.is_active).length;
-                document.getElementById('versions-latest').textContent = versions[0]?.version_number || 'N/A';
-                
-                // Update versions table
-                const tbody = document.getElementById('versions-table-body');
-                if (versions.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-zinc-500">No model versions found</td></tr>';
-                } else {
-                    tbody.innerHTML = versions.map(v => `
-                        <tr class="border-b border-zinc-200 dark:border-zinc-700">
-                            <td class="px-4 py-3 font-semibold">${v.version_number}</td>
-                            <td class="px-4 py-3">${new Date(v.trained_at).toLocaleDateString()}</td>
-                            <td class="px-4 py-3">${v.accuracy ? (v.accuracy * 100).toFixed(1) + '%' : 'N/A'}</td>
-                            <td class="px-4 py-3">${v.f1_score ? v.f1_score.toFixed(3) : 'N/A'}</td>
-                            <td class="px-4 py-3">${v.data_quality_score ? (v.data_quality_score * 100).toFixed(1) + '%' : 'N/A'}</td>
-                            <td class="px-4 py-3">
-                                <span class="px-2 py-1 rounded text-xs ${v.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}">
-                                    ${v.is_active ? 'Active' : v.deployment_status}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3">
-                                ${!v.is_active ? `<button onclick="activateVersion('${v.version_number}')" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Activate</button>` : ''}
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-                
-                const versionsIndicator = document.getElementById('versions-status-indicator');
-                versionsIndicator.className = versions.length > 0 ? 'w-3 h-3 rounded-full bg-green-500' : 'w-3 h-3 rounded-full bg-gray-400';
-            }
-        } catch (error) {
-            console.error('Error fetching versions:', error);
-        }
-    }
-    
-    // Activate version function
-    window.activateVersion = async function(versionNumber) {
-        try {
-            const response = await fetch('/api/activate-model-version/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ version_number: versionNumber })
-            });
-            
-            const data = await response.json();
-            if (data.success) {
-                alert('Model version activated successfully!');
-                loadModelVersions();
-                updateStatus();
-            } else {
-                alert('Error: ' + (data.error || 'Failed to activate version'));
-            }
-        } catch (error) {
-            console.error('Error activating version:', error);
-            alert('Error activating version');
-        }
-    };
-    
     // Get CSRF token
     function getCookie(name) {
         let cookieValue = null;
@@ -388,59 +139,159 @@ document.addEventListener('DOMContentLoaded', function() {
         return cookieValue;
     }
     
-    // Event listeners
-    document.getElementById('refresh-status-btn').addEventListener('click', function() {
-        updateStatus();
-        loadModelVersions();
-    });
+    // Simple Training
+    const simpleTrainBtn = document.getElementById('simple-train-btn');
+    const simpleTrainStatus = document.getElementById('simple-train-status');
+    const simpleTrainResults = document.getElementById('simple-train-results');
+    const simpleTrainError = document.getElementById('simple-train-error');
     
-    document.getElementById('trigger-training-btn').addEventListener('click', async function() {
-        if (!confirm('Trigger manual model training? This may take several minutes.')) return;
-        
+    async function runSimpleTraining() {
         try {
-            const response = await fetch('/api/trigger-training/', {
+            // Hide previous results/errors
+            simpleTrainResults.classList.add('hidden');
+            simpleTrainError.classList.add('hidden');
+            
+            // Show status
+            simpleTrainStatus.classList.remove('hidden');
+            document.getElementById('simple-train-progress').textContent = '🔄 Training in progress...';
+            document.getElementById('simple-train-message').textContent = 'Reading text files, extracting features with GPT-5, training model...';
+            
+            // Disable button
+            simpleTrainBtn.disabled = true;
+            simpleTrainBtn.textContent = '⏳ Training...';
+            
+            // Make API call
+            const response = await fetch('/api/simple-train/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ force: false })
+                }
             });
             
             const data = await response.json();
+            
+            // Hide status
+            simpleTrainStatus.classList.add('hidden');
+            
             if (data.success) {
-                alert('Training triggered successfully! Version: ' + data.version_number);
-                setTimeout(() => {
-                    updateStatus();
-                    loadModelVersions();
-                }, 2000);
+                // Show results
+                simpleTrainResults.classList.remove('hidden');
+                document.getElementById('result-docs').textContent = data.details.documents_processed || '-';
+                document.getElementById('result-features').textContent = data.details.features_extracted || '-';
+                document.getElementById('result-samples').textContent = data.details.samples_created || '-';
+                document.getElementById('result-accuracy').textContent = 
+                    data.details.accuracy ? `${(data.details.accuracy * 100).toFixed(1)}%` : '-';
+                
+                // Update button
+                simpleTrainBtn.textContent = '✅ Training Complete!';
+                
             } else {
-                alert('Error: ' + (data.error || data.message || 'Failed to trigger training'));
+                // Show error
+                simpleTrainError.classList.remove('hidden');
+                document.getElementById('error-message').textContent = data.error || 'Training failed';
+                document.getElementById('error-recommendation').textContent = 
+                    data.recommendation || 'Check the console logs for more details';
+                
+                // Update button
+                simpleTrainBtn.textContent = '❌ Training Failed';
+            }
+            
+        } catch (error) {
+            console.error('Simple training error:', error);
+            simpleTrainStatus.classList.add('hidden');
+            simpleTrainError.classList.remove('hidden');
+            document.getElementById('error-message').textContent = error.message || 'Network error';
+            document.getElementById('error-recommendation').textContent = 'Check your connection and try again';
+            simpleTrainBtn.textContent = '❌ Error';
+        } finally {
+            // Re-enable button after 3 seconds
+            setTimeout(() => {
+                simpleTrainBtn.disabled = false;
+                simpleTrainBtn.textContent = '🚀 Train Model Now';
+            }, 3000);
+        }
+    }
+    
+    // Attach event listener
+    simpleTrainBtn.addEventListener('click', runSimpleTraining);
+    
+    // ============================================
+    // MODEL STATUS LOADING
+    // ============================================
+    async function loadModelStatus() {
+        try {
+            const response = await fetch('/api/model-status/');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update model status
+                const statusEl = document.getElementById('model-status');
+                if (data.model_exists) {
+                    statusEl.textContent = '✅ Trained';
+                    statusEl.classList.remove('text-zinc-600', 'dark:text-zinc-400');
+                    statusEl.classList.add('text-green-600');
+                } else {
+                    statusEl.textContent = '❌ Not Trained';
+                    statusEl.classList.remove('text-green-600');
+                    statusEl.classList.add('text-zinc-600', 'dark:text-zinc-400');
+                }
+                
+                // Update last trained
+                if (data.last_trained) {
+                    const date = new Date(data.last_trained);
+                    // Format: "Nov 1, 2025, 12:34:56 PM"
+                    const options = {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    document.getElementById('last-trained').textContent = date.toLocaleString('en-US', options);
+                } else {
+                    document.getElementById('last-trained').textContent = 'Never';
+                }
+                
+                // Update accuracy
+                if (data.accuracy) {
+                    document.getElementById('model-accuracy').textContent = `${(data.accuracy * 100).toFixed(1)}%`;
+                } else {
+                    document.getElementById('model-accuracy').textContent = '-';
+                }
+                
+                // Update data status
+                document.getElementById('text-files-count').textContent = data.text_files_count || '0';
+                document.getElementById('training-samples').textContent = data.training_samples || '-';
+                
+                if (data.model_type) {
+                    document.getElementById('model-type').textContent = data.model_type;
+                }
+                
+                if (data.features) {
+                    document.getElementById('features-used').textContent = data.features.length || '3';
+                }
+                
+            } else {
+                console.warn('Failed to load model status:', data.error);
             }
         } catch (error) {
-            console.error('Error triggering training:', error);
-            alert('Error triggering training');
+            console.error('Error loading model status:', error);
+            document.getElementById('model-status').textContent = '⚠️ Error Loading';
         }
-    });
+    }
     
-    document.getElementById('view-versions-btn').addEventListener('click', function() {
-        document.getElementById('versions-table-section').classList.remove('hidden');
-        loadModelVersions();
-    });
+    // Load model status on page load
+    loadModelStatus();
     
-    document.getElementById('close-versions-btn').addEventListener('click', function() {
-        document.getElementById('versions-table-section').classList.add('hidden');
-    });
-    
-    // Initial load
-    updateStatus();
-    loadModelVersions();
-    
-    // Auto-refresh every 30 seconds
-    setInterval(() => {
-        updateStatus();
-        loadModelVersions();
-    }, 30000);
+    // Also reload after successful training
+    const originalRunTraining = runSimpleTraining;
+    runSimpleTraining = async function() {
+        await originalRunTraining();
+        // Reload model status after training completes
+        setTimeout(loadModelStatus, 1000);
+    };
 });
 </script>
 {% endblock %}

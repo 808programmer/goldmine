@@ -36,6 +36,7 @@ from .enhanced_prediction_service import EnhancedPredictionService
 from .simple_mapping_service import SimpleMappingService
 from django.utils.decorators import method_decorator
 from .ml_model import MineralPredictionModel
+from .simple_trainer import run_simple_training
 
 
 logger = logging.getLogger(__name__)
@@ -3294,181 +3295,104 @@ def health_check(request):
     })
 
 
-# ============== TRAINING MANAGEMENT & STATUS API ENDPOINTS ==============
+# ============== SIMPLE TRAINING API ENDPOINT ==============
 
 @csrf_exempt
-@require_http_methods(["GET"])
-def get_training_status(request):
-    """Get comprehensive training and system status"""
+@require_http_methods(["POST"])
+def simple_train_model(request):
+    """
+    SIMPLE TRAINING ENDPOINT
+    
+    Runs the simplified training process:
+    1. Reads text files from extracted_texts/
+    2. Uses GPT-5 to extract features
+    3. Trains a simple classifier
+    4. Returns results
+    
+    No complex orchestration, just straightforward training.
+    """
     try:
-        from .training_status_service import TrainingStatusService
+        logger.info("🚀 Starting simple training process...")
         
-        status = TrainingStatusService.get_comprehensive_status()
-        return JsonResponse({
-            'success': True,
-            'status': status
-        })
+        # Run training
+        result = run_simple_training()
+        
+        if result['success']:
+            logger.info(f"✅ Training completed successfully: {result.get('accuracy', 0):.1%} accuracy")
+            return JsonResponse({
+                'success': True,
+                'message': 'Model trained successfully!',
+                'details': result
+            })
+        else:
+            logger.error(f"❌ Training failed: {result.get('error', 'Unknown error')}")
+            return JsonResponse({
+                'success': False,
+                'error': result.get('error', 'Training failed'),
+                'recommendation': result.get('recommendation', 'Check logs for details')
+            }, status=400)
+            
     except Exception as e:
-        logger.error(f"Error getting training status: {e}", exc_info=True)
-        import traceback
-        error_trace = traceback.format_exc()
-        logger.error(f"Full traceback: {error_trace}")
+        logger.error(f"❌ Simple training error: {e}", exc_info=True)
         return JsonResponse({
             'success': False,
             'error': str(e),
-            'traceback': error_trace if settings.DEBUG else None
+            'error_type': type(e).__name__
         }, status=500)
 
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def get_validation_status(request):
-    """Get data validation status"""
+def get_model_status(request):
+    """
+    Get the current model status and metadata
+    """
     try:
-        from .training_status_service import TrainingStatusService
+        import os
+        from pathlib import Path
+        import json
         
-        validation = TrainingStatusService.get_validation_status()
-        return JsonResponse({
-            'success': True,
-            'validation': validation
-        })
-    except Exception as e:
-        logger.error(f"Error getting validation status: {e}", exc_info=True)
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
-
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def trigger_manual_training(request):
-    """Manually trigger model training"""
-    try:
-        from .automated_training_service import AutomatedTrainingService
+        model_dir = Path(settings.BASE_DIR) / 'mining' / 'models'
+        model_path = model_dir / 'simple_gold_model.joblib'
+        metadata_path = model_dir / 'simple_gold_metadata.json'
+        extracted_texts_dir = Path(settings.MEDIA_ROOT) / 'extracted_texts'
         
-        data = json.loads(request.body) if request.body else {}
-        force = data.get('force', False)
+        # Check if model exists
+        model_exists = model_path.exists()
         
-        service = AutomatedTrainingService()
-        result = service.trigger_auto_training(force=force)
+        # Load metadata if exists
+        metadata = {}
+        if metadata_path.exists():
+            try:
+                with open(metadata_path, 'r') as f:
+                    metadata = json.load(f)
+            except Exception as e:
+                logger.warning(f"Could not load metadata: {e}")
         
-        return JsonResponse(result)
-    except Exception as e:
-        logger.error(f"Error triggering manual training: {e}", exc_info=True)
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
-
-
-@csrf_exempt
-@require_http_methods(["GET"])
-def list_model_versions(request):
-    """List all model versions"""
-    try:
-        from .model_versioning import ModelVersionManager
+        # Count text files
+        text_files_count = 0
+        if extracted_texts_dir.exists():
+            text_files_count = len(list(extracted_texts_dir.glob('*.txt')))
         
-        manager = ModelVersionManager()
-        limit = int(request.GET.get('limit', 10))
-        versions = manager.list_versions(limit=limit)
-        
-        versions_data = [{
-            'id': v.id,
-            'version_number': v.version_number,
-            'trained_at': v.trained_at.isoformat(),
-            'accuracy': v.accuracy,
-            'f1_score': v.f1_score,
-            'data_quality_score': v.data_quality_score,
-            'documents_used': v.documents_used,
-            'is_active': v.is_active,
-            'deployment_status': v.deployment_status,
-            'model_file_exists': v.model_file_exists(),
-            'description': v.description
-        } for v in versions]
+        # Calculate training samples from metadata or estimate
+        training_samples = metadata.get('training_samples', None)
         
         return JsonResponse({
             'success': True,
-            'versions': versions_data,
-            'total': len(versions_data)
+            'model_exists': model_exists,
+            'last_trained': metadata.get('trained_at'),
+            'accuracy': metadata.get('accuracy'),  # Now we store accuracy in metadata
+            'model_type': metadata.get('model_type', 'RandomForestClassifier'),
+            'features': metadata.get('features', ['coordinate_count', 'indicator_count', 'confidence']),
+            'target': metadata.get('target', 'has_gold_info'),
+            'text_files_count': text_files_count,
+            'training_samples': training_samples,
+            'model_path': str(model_path) if model_exists else None
         })
+        
     except Exception as e:
-        logger.error(f"Error listing model versions: {e}", exc_info=True)
+        logger.error(f"Error getting model status: {e}", exc_info=True)
         return JsonResponse({
             'success': False,
             'error': str(e)
         }, status=500)
-
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def activate_model_version(request):
-    """Activate a specific model version"""
-    try:
-        from .model_versioning import ModelVersionManager
-        from .models import ModelVersion
-        
-        data = json.loads(request.body)
-        version_number = data.get('version_number')
-        
-        if not version_number:
-            return JsonResponse({
-                'success': False,
-                'error': 'version_number is required'
-            }, status=400)
-        
-        manager = ModelVersionManager()
-        success = manager.rollback_to_version(version_number)
-        
-        if success:
-            return JsonResponse({
-                'success': True,
-                'message': f'Activated model version {version_number}'
-            })
-        else:
-            return JsonResponse({
-                'success': False,
-                'error': f'Failed to activate version {version_number}'
-            }, status=400)
-            
-    except ModelVersion.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Model version not found'
-        }, status=404)
-    except Exception as e:
-        logger.error(f"Error activating model version: {e}", exc_info=True)
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
-
-
-@csrf_exempt
-@require_http_methods(["GET"])
-def get_training_progress(request):
-    """Get current training progress (for progress bars)"""
-    try:
-        from .training_status_service import TrainingStatusService
-        
-        progress = TrainingStatusService.get_training_progress()
-        
-        if progress:
-            return JsonResponse({
-                'success': True,
-                'progress': progress
-            })
-        else:
-            return JsonResponse({
-                'success': True,
-                'progress': None,
-                'message': 'No training in progress'
-            })
-    except Exception as e:
-        logger.error(f"Error getting training progress: {e}", exc_info=True)
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
-
-

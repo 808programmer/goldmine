@@ -227,3 +227,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# OpenAI API Key (required for LLM services and CrewAI agents)
+OPENAI_API_KEY = config('OPENAI_API_KEY', default=None)
+
+# Ensure OPENAI_API_KEY is available in environment for CrewAI
+if OPENAI_API_KEY and not os.getenv('OPENAI_API_KEY'):
+    os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY

@@ -67,11 +67,7 @@ urlpatterns = [
     path('api/simple-intelligent-coordinates/', views.api_simple_intelligent_coordinates, name='api-simple-intelligent-coordinates'),
     path('health/', views.health_check, name='health_check'),
     
-    # Training Management & Status API endpoints
-    path('api/training-status/', views.get_training_status, name='training-status'),
-    path('api/validation-status/', views.get_validation_status, name='validation-status'),
-    path('api/trigger-training/', views.trigger_manual_training, name='trigger-training'),
-    path('api/model-versions/', views.list_model_versions, name='model-versions'),
-    path('api/activate-model-version/', views.activate_model_version, name='activate-model-version'),
-    path('api/training-progress/', views.get_training_progress, name='training-progress'),
+    # Simple Training Endpoints
+    path('api/simple-train/', views.simple_train_model, name='simple-train'),
+    path('api/model-status/', views.get_model_status, name='model-status'),
 ]
